@@ -40,7 +40,6 @@ const teams = [
         'status_of_game': 0,
         'kickoff': '1:30pm'
     },
-    ,
     {
         'home_team': 'Penrith Panthers',
         'away_team': 'Cronulla Sharks',
@@ -76,25 +75,117 @@ const getLogo = (teamName) => {
     }
 };
 
+const getImageSize = (teamName) => {
+    switch (teamName) {
+        case 'Sydney Roosters': return ['0rem', '-.6rem', '-1.4rem', '0rem', '6rem'];
+        case 'Melbourne Storm': return ['0rem', '-1.9rem', '-1.5rem', '0rem', '5rem'];
+        case 'Canberra Raiders': return ['0rem', '-1.975rem', '-1.9rem', '0rem', '7rem'];
+        case 'Penrith Panthers': return ['0rem', '-4.2rem', '-2.7rem', '0rem', '9rem']; // Right, left, top, bottom
+        case 'Manly Warringah Sea Eagles': return '#6F0F3B';
+        case 'Gold Coast Titans': return ['0rem', '-0.5rem', '0rem', '0rem', '4rem'];
+        case 'Brisbane Broncos': return ['0rem', '-1.7rem', '-0.6rem', '0rem', '5rem'];
+        case 'Canterbury-Bankstown Bulldogs': return ['0rem', '-1.2rem', '0rem', '0rem', '6rem'];
+        case 'Cronulla Sharks': return ['0rem', '-1.7rem', '-1.2rem', '0rem', '5rem'];
+        case 'Dolphins': return ['0rem', '0rem', '-1.5rem', '0rem', '10rem']; // Right, left, top, bottom
+        case 'New Zealand Warriors': return ['0rem', '-1.05rem', '-1rem', '0rem', '5rem'];
+        case 'Newcastle Knights': return ['0rem', '-1.4rem', '-1.2rem', '0rem', '5rem'];
+        case 'North Queensland Cowboys': ['0rem', '0rem', '0rem', '0rem', '3rem'];
+        case 'Parramatta Eels': return ['0rem', '0.4rem', '-1.4rem', '0rem', '6rem'];
+        case 'South Sydney Rabbitohs': return ['0rem', '.5rem', '-1.7rem', '0rem', '6rem']
+        case 'St George Illawarra Dragons': return ['0rem', '0rem', '-.6rem', '0rem', '5rem'];
+        case 'Wests Tigers': return ['0rem', '-1.7rem', '-1.4rem', '0rem', '6.5rem'];
+        case 'Wigan Warriors': return ['0rem', '-2rem', '-2.2rem', '0rem', '7rem'];
+        case 'Warrington Wolves': return ['0rem', '-1.5rem', '-2.2rem', '0rem', '6rem'];
+        case 'Australia Jillaroos': return ['0rem', '-3.1rem', '-2.5rem', '0rem', '8.5rem']; // Right, left, top, bottom
+        case 'England Lionesses': return ['0rem', '-1.8rem', '-.4rem', '0rem', '7rem']; // Right, left, top, bottom
+        default: return '';
+    }
+};
+
 function FixturesTable() {
     return (
-        <div style={{ backgroundColor: '#313131', fontFamily: "Sour Gummy, sans-serif", width: '30rem', color: 'white', borderRadius: '.5rem' }} className="container">
-            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '1rem 1.5rem' }} className="title">
-                <h1 style={{ margin: '.5rem 0', textTransform: 'uppercase' }}>Super Saturday</h1>
-                <p style={{ margin: '0', textTransform: 'uppercase' }}>Fixtures</p>
+        <div style={{
+            backgroundColor: '#313131',
+            fontFamily: "Sour Gummy, sans-serif",
+            width: '30rem',
+            color: 'white',
+            borderRadius: '.5rem',
+            padding: '1rem',
+        }} className="container">
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                padding: '1rem 1.5rem'
+            }} className="title">
+                <h1 style={{
+                    margin: '.5rem 0',
+                    textTransform: 'uppercase',
+                }}>Super Saturday</h1>
+                <p style={{
+                    margin: '0',
+                    textTransform: 'uppercase',
+                }}>Fixtures</p>
             </div>
 
             <div className="fixtures-list">
                 {teams.map((match, index) => (
-                    <div key={index} className="fixture">
-                        <div className="home-team">
-                            <img src={getLogo(match.home_team)} alt={match.home_team} style={{ width: '50px', height: 'auto' }} />
+                    <div key={index} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '.15rem 1rem'
+                    }} className="fixture">
+                        <div style={{
+                            width: '5rem',
+                            height: '5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: 'black',
+                            borderRadius: '100%',
+                            position: 'relative',
+                            overflow: 'hidden', // Ensure the image is cut off at the border
+                            border: `3px solid var(--home-team-color)`, // Apply the border color dynamically
+                            boxShadow: `0 0 10px 9px var(--home-team-darkened-color)`, // Apply the box shadow dynamically
+                        }} className="home-team">
+                            <img style={{
+                                width: `${parseFloat(getImageSize(match.home_team)) + 2}rem`,
+                                height: `${parseFloat(getImageSize(match.home_team)) + 2}rem`,
+                                objectFit: 'contain', // Ensures the logo fits and doesn't overflow
+                                position: 'absolute',
+                                right: `${getImageSize(match.home_team)[0]}`,
+                                left: `${getImageSize(match.home_team)[1]}`,
+                                top: `${getImageSize(match.home_team)[2]}`,
+                                bottom: `${getImageSize(match.home_team)[3]}`
+                            }} src={getLogo(match.home_team)} alt={match.home_team} />
                         </div>
                         <div className="kickoff-time">
                             <span>{match.kickoff}</span>
                         </div>
-                        <div className="away-team">
-                            <img src={getLogo(match.away_team)} alt={match.away_team} style={{ width: '50px', height: 'auto' }} />
+                        <div style={{
+                            width: '5rem',
+                            height: '5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: 'black',
+                            borderRadius: '100%',
+                            position: 'relative',
+                            overflow: 'hidden', // Ensure the image is cut off at the border
+                            border: `3px solid var(--away-team-color)`, // Apply the border color dynamically
+                            boxShadow: `0 0 10px 9px var(--away-team-darkened-color)`, // Apply the box shadow dynamically
+                        }} className="away-team">
+                            <img style={{
+                                width: `${parseFloat(getImageSize(match.away_team)) + 2}rem`,
+                                height: `${parseFloat(getImageSize(match.away_team)) + 2}rem`,
+                                objectFit: 'contain', // Ensures the logo fits and doesn't overflow
+                                position: 'absolute',
+                                right: 'var(--away_image_pos_right)',
+                                left: 'var(--away_image_pos_left)',
+                                top: 'var(--away_image_pos_top)',
+                                bottom: 'var(--away_image_pos_bottom)'
+                            }} src={getLogo(match.away_team)} alt={match.away_team} />
                         </div>
                     </div>
                 ))}

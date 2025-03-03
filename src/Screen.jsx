@@ -273,7 +273,7 @@ function Screen() {
       <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
       <Stats statsText={statsText} statsValue={statsValue} />
-      <FixturesTable />
+      {/* <FixturesTable /> */}
     </>
   );
 }
