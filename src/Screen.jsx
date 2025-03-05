@@ -10,6 +10,9 @@ import FoxLeague from './scoreboards/FoxLeague';
 import Scorebug from './graphics/Scorebug'
 import Stats from './graphics/Stats'
 import FixturesTable from './graphics/FixturesTable';
+import Commentators from './graphics/Commentators';
+
+import BottomNextGame from './graphics/BottomNextGame'
 
 function Screen() {
   const [matchData, setMatchData] = useState({});
@@ -161,7 +164,7 @@ function Screen() {
     const fetchScores = async () => {
       try {
         const response = await axios.get('http://localhost:3000/toggle');
-        if (response.data && response.data.home_team_score && response.data.away_team_score !== undefined) {
+        if (response.data !== undefined) {
           let scoresTable = {
             homeScore: response.data.home_team_score,
             awayScore: response.data.away_team_score
@@ -268,12 +271,14 @@ function Screen() {
 
   return (
     <>
+      {/* <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={{ 'home_team': 'penrith-panthers', 'away_team': 'parramatta-eels', 'subtitle': 'NRL Round 1', 'first_player': "Nathan Cleary", 'second_player': "Mitchell Moses" }} /> */}
       <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} />
       <StudioUpdate updateStatus={updateStatus} text={text} statsValue={statsValue} />
       <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
       <Stats statsText={statsText} statsValue={statsValue} />
       {/* <FixturesTable /> */}
+      {/* <Commentators /> */}
     </>
   );
 }

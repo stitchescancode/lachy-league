@@ -149,11 +149,13 @@ rl.on('line', (input) => {
         scoreboard_graphic_status = false;
         logo_graphic_status = false;
         statsStatus = false;
+        scorebug_status = false;
 
         console.log(`${getFormattedDate()}: Update graphic status set to ${update_graphic_status}`);
         console.log(`${getFormattedDate()}: Scoreboard graphic status set to ${scoreboard_graphic_status}`);
         console.log(`${getFormattedDate()}: Logo graphic status set to ${logo_graphic_status}`);
         console.log(`${getFormattedDate()}: Stats status set to ${statsStatus}`);
+        console.log(`${getFormattedDate()}: Scorebug status set to ${scorebug_status}`);
     } else if (input === '6') {
         logo_graphic_status = !logo_graphic_status;
         console.log(`${getFormattedDate()}: Logo graphic status set to ${logo_graphic_status}`);
@@ -192,11 +194,16 @@ rl.on('line', (input) => {
         selectTime()
     } else if (input === "11") {
         selectDataForUpcomingGraphic()
+    } else if (input === "1+7") {
+        update_graphic_status = !update_graphic_status;
+        statsStatus = !statsStatus;
+        console.log(`${getFormattedDate()}: Update graphic status set to ${update_graphic_status}`);
+        console.log(`${getFormattedDate()}: Stats status set to ${statsStatus}`);
     } else if (input === "?") {
         clockSeconds = 2400;
         console.log(`${getFormattedDate()}: Reset clock to ${clockSeconds}`);
     } else {
-        console.log('${getFormattedDate()}: Invalid option. Please try again.');
+        console.log(`${getFormattedDate()}: Invalid option. Please try again.`);
         rl.prompt();
     }
 });

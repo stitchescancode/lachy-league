@@ -107,7 +107,7 @@ function FixturesTable() {
         <div style={{
             backgroundColor: '#313131',
             fontFamily: "Sour Gummy, sans-serif",
-            width: '30rem',
+            width: '20rem',
             color: 'white',
             borderRadius: '.5rem',
             padding: '1rem',

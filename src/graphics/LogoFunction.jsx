@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Logo from '../../logos/positive-variant/lachy-league.png';
+import Logo2 from '../../logos/lachy-cricket/primary/lachy-cricket.png';
 
 const logoStyle = (reverseAnimation) => ({
     position: 'absolute',

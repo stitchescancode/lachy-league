@@ -54,6 +54,7 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     useEffect(() => {
         if (initialMatchData) {
             setMatchData(initialMatchData);
+            console.log(initialMatchData)
         }
     }, [initialMatchData]);
 
@@ -355,4 +356,4 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     );
 }
 
-export default FoxLeague; S
+export default FoxLeague;

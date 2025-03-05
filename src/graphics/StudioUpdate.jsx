@@ -92,13 +92,14 @@ function StudioUpdate({ updateStatus, text, statsValue }) {
     height: '9.8rem',
     width: '100%', // Take up full width now, no animations affecting it
     gap: '2rem',
-    fontSize: '1.5rem',
+    fontSize: '1.75rem',
     fontFamily: 'Sour Gummy, sans-serif',
     color: 'white',
     textTransform: 'uppercase',
     animation: updateStatus
       ? 'backgroundFadeIn 1s ease-out forwards'
       : 'backgroundFadeOut 1s ease-in forwards', // Background fade in/out
+    boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)', // Stronger drop shadow
   };
 
   const img = {
