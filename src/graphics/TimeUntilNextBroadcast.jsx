@@ -5,7 +5,7 @@ const TimeUntil = () => {
     const [timeRemaining, setTimeRemaining] = useState('');
 
     // Hardcoded target time (dd/mm/yy hh:mm AM/PM format)
-    const targetTime = '03/06/2025 06:30 PM'; // Example target time
+    const targetTime = '03/08/2025 07:25 PM'; // Example target time
 
     useEffect(() => {
         const interval = setInterval(() => {

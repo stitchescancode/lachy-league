@@ -2,7 +2,7 @@ import express from 'express';
 import readline from 'readline';
 import cors from 'cors';
 import keypress from 'keypress';
-import { PostMatch, updateMatchScore, updateMatchStatus } from './database/PostMatches.js';
+import { PostMatch, updateMatchScore, updateMatchStatus, updateStats } from './database/PostMatches.js';
 import getAllMatches from './database/GetMatches.js';
 
 let update_graphic_status;
@@ -14,6 +14,9 @@ let statsStatus;
 let statsText;
 let tackle_count = 0;
 let scorebug_status;
+let fixtures_status;
+let ultra_hd;
+let statsTableStatus;
 
 let clock = false;
 let clockSeconds = 2400;
@@ -24,6 +27,8 @@ let away_team_score = 0;
 let statusOfGame = 0;
 
 let selectedMatch = {};
+let fixturesTable = [];
+let stats = {};
 
 let inputLock = false;
 let statsInputLock = false;
@@ -84,27 +89,33 @@ const nrlTeams = [
 ];
 
 const nrlStadiums = [
-    "Accor Stadium, Sydney", // Formerly ANZ Stadium
-    "AAMI Park, Melbourne",
-    "Allianz Stadium, Sydney",
-    "CommBank Stadium, Parramatta", // Formerly Bankwest Stadium
-    "Coffs Harbour International Stadium, Coffs Harbour",
-    "CQU Stadium, Rockhampton",
-    "GIO Stadium, Canberra",
-    "Henson Park, Sydney",
-    "Indigenous Round at Optus Stadium, Perth",
-    "Suncorp Stadium, Brisbane",
-    "TIO Stadium, Darwin",
-    "Leichhardt Oval, Sydney",
-    "Brookvale Oval, Sydney",
-    "McDonald Jones Stadium, Newcastle",
-    "Glen Willow Stadium, Mudgee",
-    "Netstrata Jubilee Stadium, Sydney",
-    "Scully Park, Tamworth",
-    "Stadium Australia, Sydney",
-    "Sunshine Coast Stadium, Sunshine Coast",
-    "Victoria Park, Mackay",
-    "Allegiant Stadium, Las Vegas" // For Las Vegas NRL game
+    "Accor Stadium", // Formerly ANZ Stadium
+    "AAMI Park",
+    "Allianz Stadium",
+    "CommBank Stadium", // Formerly Bankwest Stadium
+    "Coffs Harbour International Stadium",
+    "CQU Stadium",
+    "GIO Stadium",
+    "Henson Park",
+    "Indigenous Round at Optus Stadium",
+    "Suncorp Stadium",
+    "TIO Stadium",
+    "Leichhardt Oval",
+    "Brookvale Oval",
+    "McDonald Jones Stadium",
+    "Glen Willow Stadium",
+    "Netstrata Jubilee Stadium",
+    "Scully Park",
+    "Stadium Australia",
+    "Sunshine Coast Stadium",
+    "Victoria Park",
+    "Allegiant Stadium",
+    "McDonalds Jones",
+    "Go Media Stadium",
+    "WIN Stadium",
+    "QCB Stadium",
+    "GIO Stadium",
+    "Belmore Sports Ground" // For Las Vegas NRL game
 ];
 
 let homeTeam, awayTeam;
@@ -117,7 +128,9 @@ rl.on('line', (input) => {
 
     if (input === '1') {
         update_graphic_status = !update_graphic_status;
+        fixtures_status = false;
         console.log(`${getFormattedDate()}: Update graphic status set to ${update_graphic_status}`);
+        console.log(`${getFormattedDate()}: Fixtures table status set to ${fixtures_status}`);
     } else if (input === '2') {
         scoreboard_graphic_status = !scoreboard_graphic_status;
         console.log(`${getFormattedDate()}: Scoreboard graphic status set to ${scoreboard_graphic_status}`);
@@ -150,12 +163,14 @@ rl.on('line', (input) => {
         logo_graphic_status = false;
         statsStatus = false;
         scorebug_status = false;
+        fixtures_status = false;
 
         console.log(`${getFormattedDate()}: Update graphic status set to ${update_graphic_status}`);
         console.log(`${getFormattedDate()}: Scoreboard graphic status set to ${scoreboard_graphic_status}`);
         console.log(`${getFormattedDate()}: Logo graphic status set to ${logo_graphic_status}`);
         console.log(`${getFormattedDate()}: Stats status set to ${statsStatus}`);
         console.log(`${getFormattedDate()}: Scorebug status set to ${scorebug_status}`);
+        console.log(`${getFormattedDate()}: Fixtures table status set to ${fixtures_status}`);
     } else if (input === '6') {
         logo_graphic_status = !logo_graphic_status;
         console.log(`${getFormattedDate()}: Logo graphic status set to ${logo_graphic_status}`);
@@ -179,7 +194,7 @@ rl.on('line', (input) => {
             statusOfGame = 0;  // Default to 0 if NaN
         }
         updateMatchStatus(selectedMatch.home_team, selectedMatch.away_team, statusOfGame);
-    } else if (input === 'a') {
+    } else if (input === 'y') {
         addMinus = !addMinus; // Toggle the value of addMinus
         console.log(`${getFormattedDate()}: ${addMinus}`); // Log the current value of addMinus
     } else if (input === '}') {
@@ -202,6 +217,21 @@ rl.on('line', (input) => {
     } else if (input === "?") {
         clockSeconds = 2400;
         console.log(`${getFormattedDate()}: Reset clock to ${clockSeconds}`);
+    } else if (input === "14") {
+        fixturesTableSelect()
+    } else if (input === "13") {
+        update_graphic_status = false;
+        statsStatus = false;
+        fixtures_status = !fixtures_status;
+        console.log(`${getFormattedDate()}: Fixtures table status set to ${fixtures_status}`);
+    } else if (input === "16") {
+        update_graphic_status = false;
+        statsStatus = false;
+        statsTableStatus = !statsTableStatus;
+        console.log(`${getFormattedDate()}: Status table status set to ${statsTableStatus}`);
+    } else if (input === '15') {
+        ultra_hd = !ultra_hd;
+        console.log(`${getFormattedDate()}: Ultra hd status set to ${ultra_hd}`);
     } else {
         console.log(`${getFormattedDate()}: Invalid option. Please try again.`);
         rl.prompt();
@@ -325,6 +355,21 @@ rl.input.on('keypress', (char, key) => {
         console.log(tackle_count);
     } else if (key.name === 'up') {
         tackle_count += 1;
+        if (tackle_count === 5) {
+            rl.question('Enter gain or loss: ', (gain) => {
+                let result = '';
+                if (gain < 0) {
+                    result = `${Math.abs(gain)}M LOSS`; // Ensure the loss is positive and displayed correctly
+                } else {
+                    result = `${gain}M GAIN`; // Show gain with "GAIN"
+                }
+
+                // Reset tackle count after 1.5 seconds
+                setTimeout(() => {
+                    tackle_count = 5; // Reset to 0, not 5, to start counting again
+                }, 1500);
+            });
+        }
         console.log(tackle_count);
     } else if (key.name === 'down') {
         tackle_count -= 1;
@@ -372,6 +417,46 @@ rl.input.on('keypress', (char, key) => {
             console.log(`${getFormattedDate()}: $${homeTeam} ${home_team_score} : ${away_team_score} ${awayTeam}`);
             updateMatchScore(selectedMatch.home_team, selectedMatch.away_team, home_team_score, away_team_score);
         }
+    } else if (key.name === 'a') {
+        stats.team_a_total_sets += 1;
+        stats.game_sets += 1;
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'z') {
+        stats.team_b_total_sets += 1;
+        stats.game_sets += 1;
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 's') {
+        stats.team_a_total_sets += 1;
+        stats.team_a_completions += 1;
+        stats.game_sets += 1;
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'x') {
+        stats.team_b_total_sets += 1;
+        stats.team_b_completions += 1;
+        stats.game_sets += 1;
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'd') {
+        stats.team_a_penalties += 1
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'c') {
+        stats.team_b_penalties += 1
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'f') {
+        stats.team_a_errors += 1
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'v') {
+        stats.team_b_errors += 1
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === "o") {
+        console.clear()
     }
 });
 
@@ -436,6 +521,80 @@ function selectTeams() {
     });
 }
 
+async function fixturesTableSelect() {
+    console.log("Select option: Remove matches | add match | view matches")
+    const allMatches = await getAllMatches();
+    rl.question('Remove or select game: ', (choice) => {
+        const index = parseInt(choice)
+        if (isNaN(index) || index < 1 || index > 3) {
+            console.log(`${getFormattedDate()}: Invalid selection.`)
+            return fixturesTableSelect()
+        }
+
+        if (index === 1) {
+            fixturesTable = [];
+            console.log("Reset fixture table data.")
+            rl.prompt()
+        }
+
+        if (index === 2) {
+            if (allMatches.length === 0) {
+                console.log(`${getFormattedDate()}: No matches found. Please add a match first.`);
+                return rl.prompt();
+            }
+
+            console.log('Select a game:');
+            allMatches.forEach((match, index) => {
+                console.log(`${getFormattedDate()}: ${index + 1}. ${match.home_team} vs ${match.away_team}`);
+            });
+
+            rl.question("Select match for table: ", (indexChoice) => {
+                const gameIndex = parseInt(indexChoice) - 1;
+                const selectedGame = allMatches[gameIndex];
+                let status;
+
+                nrlStadiums.forEach((stadium, index) => {
+                    console.log(`${index}. ${stadium}`);
+                });
+                rl.question('Select game stadium: ', (stadiumIndex) => {
+                    const stadiumIndexValue = parseInt(stadiumIndex)
+                    const stadium = nrlStadiums[stadiumIndexValue]
+
+                    selectedGame.stadium = stadium;
+                    inputLock = true
+                    rl.question('What is the kickoff time for this selected match: ', (kickoff) => {
+                        inputLock = false
+                        selectedGame.kickoff = kickoff;
+
+                        if (selectedGame.status_of_game === 0) {
+                            status = `${kickoff} AEST - Live on Lachy League (CH ${process.env.VITE_CHANNEL_NUMBER})`
+                        } else if (selectedGame.status_of_game === 1) {
+                            status = '1st half'
+                        } else if (selectedGame.status_of_game === 2) {
+                            status = 'Half time'
+                        } else if (selectedGame.status_of_game === 3) {
+                            status = '2nd half'
+                        } else if (selectedGame.status_of_game === 4) {
+                            status = 'Full time'
+                        }
+
+                        selectedGame.status = status;
+
+                        fixturesTable.push(selectedGame);
+                        console.log(fixturesTable)
+                        rl.prompt()
+                    })
+                })
+            })
+        }
+
+        if (index === 3) {
+            console.log(fixturesTable)
+            rl.prompt()
+        }
+    })
+}
+
 // Function to select a game from previously entered matches
 async function selectGame() {
     try {
@@ -464,6 +623,28 @@ async function selectGame() {
 
             home_team_score = selectedGame.home_team_score;
             away_team_score = selectedGame.away_team_score;
+
+            console.log(selectedGame)
+
+            let statsData = {};
+
+            try {
+                statsData = JSON.parse(selectedGame.stats);
+            } catch (error) {
+                console.error("Error parsing stats string:", error);
+            }
+
+            stats.game_sets = statsData.game_sets || 0;
+            stats.team_a_total_sets = statsData.team_a_total_sets || 0;
+            stats.team_b_total_sets = statsData.team_b_total_sets || 0;
+            stats.team_a_completions = statsData.team_a_completions || 0;
+            stats.team_b_completions = statsData.team_b_completions || 0;
+            stats.team_a_errors = statsData.team_a_errors || 0;
+            stats.team_b_errors = statsData.team_b_errors || 0;
+            stats.team_a_penalties = statsData.team_a_penalties || 0;
+            stats.team_b_penalties = statsData.team_b_penalties || 0;
+
+            console.log(stats)
 
             statusOfGame = selectedGame.status_of_game;
             selectedMatch = {
@@ -501,7 +682,12 @@ app.get('/toggle', (req, res) => {
             statsStatus,
             statsText,
             clockSeconds,
-            scorebug_status
+            scorebug_status,
+            fixturesTable,
+            fixtures_status,
+            ultra_hd,
+            stats,
+            statsTableStatus
         });
     } catch (error) {
         console.error('Error occurred:', error);

@@ -1,23 +1,55 @@
 import { useState, useEffect } from 'react';
+import Roosters from '../assets/roosters.webp';
+import Raiders from '../assets/raiders-no-text.svg';
+import Panthers from '../assets/panthers.webp';
+import Storm from '../assets/storm.webp';
+import Manly from '../assets/manly.svg';
+import Titans from '../assets/titans.webp';
+import Broncos from '../assets/broncos.webp';
+import Bulldogs from '../assets/bulldogs.webp';
+import Sharks from '../assets/sharks.webp';
+import Dolphins from '../assets/dolphins.svg';
+import Warriors from '../assets/warriors.webp';
+import Knights from '../assets/knights.webp';
+import Cowboys from '../assets/cowboys.webp';
+import Eels from '../assets/eels.webp';
+import Rabbitohs from '../assets/rabbitohs.svg';
+import Dragons from '../assets/dragons.svg';
+import Tigers from '../assets/tigers.webp';
+import Wigan from '../assets/wigan-warriors.webp';
+import Warrington from '../assets/warrington-wolves.svg';
+import AustraliaWomen from '../assets/australia-jillaroos.svg';
+import EnglishWomen from '../assets/england-lionesses.png';
+
+import NathanCleary from '../players/penrith-panthers/n.cleary.png'
+
+const leftDiv = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 1rem',
+    height: '8rem',
+    backgroundColor: '#000000',
+    borderTopRightRadius: '10rem',
+    borderBottomRightRadius: '10rem',
+    width: '20rem'
+    // No width change for logo and circle; keep them the same
+};
 
 function BottomNextGame({ statsValue, bottomNextGameStatus, bottomNextGameData }) {
     const [height, setHeight] = useState('0rem');
     const [bottomNextData, setBottomNextData] = useState({});
 
-    // Function to generate the image path based on player and team
-    function generateImageSrc(fullName, team) {
-        const names = fullName.split(' ');
+    // Function to get the image URL based on player name
+    function getImageUrl(name, team) {
+        // Construct the filename using first letter of first name and full last name
+        const names = name.split(' ');
         const firstName = names[0];
         const lastName = names[1];
+        const imageName = `${firstName[0].toLowerCase()}-${lastName.toLowerCase()}`;
 
-        // Create the image filename by using the first letter of the first name and the full last name
-        const imageName = `${firstName[0].toLowerCase()}-${lastName.toLowerCase()}.png`;
-        console.log(imageName)
-        console.log(team)
-
-        // Construct the path with the team name as a folder
-        console.log(`/players/${team.toLowerCase().replace(/\s+/g, '-')}/${imageName}`)
-        return `/players/${team.toLowerCase().replace(/\s+/g, '-')}/${imageName}`;
+        // Use relative path to access the image in the public folder
+        return `/players/${team.toLowerCase().replace(/\s+/g, '-')}/${imageName}.png`;
     }
 
     useEffect(() => {
@@ -36,56 +68,184 @@ function BottomNextGame({ statsValue, bottomNextGameStatus, bottomNextGameData }
         setBottomNextData(bottomNextGameData);
     }, [bottomNextGameData]);
 
-    // Get the player image dynamically by passing the player's name and team
-    let firstPlayerImage = generateImageSrc(bottomNextGameData.first_player, bottomNextGameData.home_team);
-    let secondPlayerImage = generateImageSrc(bottomNextGameData.second_player, bottomNextGameData.away_team);
+    const getLogo = (teamName) => {
+        switch (teamName) {
+            case 'sydney-roosters': return Roosters;
+            case 'melbourne-storm': return Storm;
+            case 'canberra-raiders': return Raiders;
+            case 'penrith-panthers': return Panthers;
+            case 'manly-warringah-sea-eagles': return Manly;
+            case 'gold-coast-titans': return Titans;
+            case 'brisbane-broncos': return Broncos;
+            case 'canterbury-bankstown-bulldogs': return Bulldogs;
+            case 'cronulla-sharks': return Sharks;
+            case 'dolphins': return Dolphins;
+            case 'new-zealand-warriors': return Warriors;
+            case 'newcastle-knights': return Knights;
+            case 'north-queensland-cowboys': return Cowboys;
+            case 'parramatta-eels': return Eels;
+            case 'south-sydney-rabbitohs': return Rabbitohs;
+            case 'st-george-illawarra-dragons': return Dragons;
+            case 'wests-tigers': return Tigers;
+            case 'wigan-warriors': return Wigan;
+            case 'warrington-wolves': return Warrington;
+            case 'australia-jillaroos': return AustraliaWomen;
+            case 'england-lionesses': return EnglishWomen;
+            default: return '';
+        }
+    };
+
+    const getSize = (teamName) => {
+        switch (teamName) {
+            case 'sydney-roosters': return Roosters;
+            case 'melbourne-storm': return Storm;
+            case 'canberra-raiders': return Raiders;
+            case 'penrith-panthers': return Panthers;
+            case 'manly-warringah-sea-eagles': return Manly;
+            case 'gold-coast-titans': return Titans;
+            case 'brisbane-broncos': return Broncos;
+            case 'canterbury-bankstown-bulldogs': return Bulldogs;
+            case 'cronulla-sharks': return Sharks;
+            case 'dolphins': return Dolphins;
+            case 'new-zealand-warriors': return Warriors;
+            case 'newcastle-knights': return Knights;
+            case 'north-queensland-cowboys': return Cowboys;
+            case 'parramatta-eels': return Eels;
+            case 'south-sydney-rabbitohs': return Rabbitohs;
+            case 'st-george-illawarra-dragons': return Dragons;
+            case 'wests-tigers': return Tigers;
+            case 'wigan-warriors': return Wigan;
+            case 'warrington-wolves': return Warrington;
+            case 'australia-jillaroos': return AustraliaWomen;
+            case 'england-lionesses': return EnglishWomen;
+            default: return '';
+        }
+    };
+
+    const getAbbTeamName = (teamName) => {
+        switch (teamName) {
+            case 'sydney-roosters': return 'Roosters';
+            case 'melbourne-storm': return 'Storm';
+            case 'canberra-raiders': return 'Raiders';
+            case 'penrith-panthers': return 'Panthers';
+            case 'manly-warringah-sea-eagles': return 'Sea Eagles';
+            case 'gold-coast-titans': return 'Titans';
+            case 'brisbane-broncos': return 'Broncos';
+            case 'canterbury-bankstown-bulldogs': return 'Bulldogs';
+            case 'cronulla-sharks': return 'Sharks';
+            case 'dolphins': return 'Dolphins';
+            case 'new-zealand-warriors': return 'Warriors';
+            case 'newcastle-knights': return 'Knights';
+            case 'north-queensland-cowboys': return 'Cowboys';
+            case 'parramatta-eels': return 'Eels';
+            case 'south-sydney-rabbitohs': return 'Rabbitohs';
+            case 'st-george-illawarra-dragons': return 'Dragons';
+            case 'wests-tigers': return 'Tigers';
+            case 'wigan-warriors': return 'Wigan Warriors';
+            case 'warrington-wolves': return 'Warrington Wolves';
+            case 'australia-jillaroos': return 'Jillaroos';
+            case 'england-lionesses': return 'Lionesses';
+            default: return '';
+        }
+    };
 
     const homeTeamName = bottomNextData.home_team ? bottomNextData.home_team.split('-')[1] : '';
-    const awayTeamName = bottomNextData.away_team ? bottomNextData.away_team.split('-')[1] : '';;
+    const awayTeamName = bottomNextData.away_team ? bottomNextData.away_team.split('-')[1] : '';
 
-    return (
-        <div style={{
-            backgroundColor: '#313131',
-            display: 'flex',
-            position: 'absolute',
-            height: '10rem',
-            alignItems: 'flex-end',
-            borderTopRightRadius: '1rem',
-            bottom: height,
-            boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
-            width: '45rem',
-            fontFamily: "Sour Gummy, sans-serif",
-            textTransform: 'uppercase',
-        }}>
-            <div className="players" style={{ display: 'flex', position: 'relative', padding: '0 0 0 1rem' }}>
-                <img
-                    style={{ height: '13rem' }}
-                    src={firstPlayerImage}
-                    alt={bottomNextGameData.first_player}
-                />
-                <img
-                    style={{ height: '13rem', position: 'absolute', left: '7rem' }}
-                    src={secondPlayerImage}
-                    alt={bottomNextGameData.second_player}
-                />
-            </div>
+    const display = 'double-team'
+
+    if (display === 'double-team') {
+        return (
             <div style={{
-                position: 'relative',
-                left: '9rem',
+                backgroundColor: '#313131',
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                color: 'white',
-                zIndex: 3,
-                height: '100%',
-                gap: '.25rem'
-            }} className="info">
-                <p style={{ margin: '0' }}>{bottomNextData.subtitle} - {new Date().getFullYear()}</p>
-                <h1 style={{ margin: '0' }}>{homeTeamName} vs {awayTeamName}</h1>
-                <p style={{ margin: '0', color: '#fff' }}>Live and Exclusive on Lachy League</p>
+                position: 'absolute',
+                height: '10rem',
+                borderTopRightRadius: '1rem',
+                bottom: height,
+                boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
+                fontFamily: "Sour Gummy, sans-serif",
+                textTransform: 'uppercase',
+                gap: '2rem'
+            }}>
+                <div style={leftDiv}>
+                    <div style={{
+                        background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+                        width: '11rem',
+                        height: '6rem',
+                        border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+                        borderRadius: '10rem',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center', // Center content vertically,
+                    }}
+                        className="circle">
+                        <img style={{ height: '4rem', marginRight: '1rem' }} src={getLogo(bottomNextData.home_team)} alt="" />
+                        <img style={{ height: '4rem' }} src={getLogo(bottomNextData.away_team)} alt="" />
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    color: 'white',
+                    zIndex: 3,
+                    height: '100%',
+                    gap: '.25rem',
+                    marginRight: '4rem'
+                }} className="info">
+                    <p style={{ margin: '0' }}>{bottomNextData.subtitle} - {new Date().getFullYear()}</p>
+                    <h1 style={{ margin: '0' }}>{getAbbTeamName(bottomNextData.home_team)} vs {getAbbTeamName(bottomNextData.away_team)}</h1>
+                    <p style={{ margin: '0', color: '#fff', opacity: 0.4 }}>TODAY | 4pm</p>
+                </div>
             </div>
-        </div>
-    );
+        );
+    } else if ('single-team') {
+        return (
+            <div style={{
+                backgroundColor: '#313131',
+                display: 'flex',
+                position: 'absolute',
+                height: '10rem',
+                borderTopRightRadius: '1rem',
+                bottom: height,
+                boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
+                fontFamily: "Sour Gummy, sans-serif",
+                textTransform: 'uppercase',
+                gap: '2rem'
+            }}>
+                <div style={leftDiv}>
+                    <div style={{
+                        background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+                        width: '6rem',
+                        height: '6rem',
+                        border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+                        borderRadius: '10rem',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center', // Center content vertically,
+                    }}
+                        className="circle">
+                        <img style={{ height: '3.5rem' }} src={getLogo(bottomNextData.home_team)} alt="" />
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    color: 'white',
+                    zIndex: 3,
+                    height: '100%',
+                    gap: '.25rem',
+                    marginRight: '4rem'
+                }} className="info">
+                    <p style={{ margin: '0' }}>{bottomNextData.subtitle} - {new Date().getFullYear()}</p>
+                    <h1 style={{ margin: '0' }}>{getAbbTeamName(bottomNextData.home_team)} vs {getAbbTeamName(bottomNextData.away_team)}</h1>
+                    <p style={{ margin: '0', color: '#fff', opacity: 0.4 }}>TODAY | 4pm</p>
+                </div>
+            </div>
+        );
+    }
 }
 
 export default BottomNextGame;

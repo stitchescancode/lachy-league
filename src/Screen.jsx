@@ -13,6 +13,7 @@ import FixturesTable from './graphics/FixturesTable';
 import Commentators from './graphics/Commentators';
 
 import BottomNextGame from './graphics/BottomNextGame'
+import MatchStats from './graphics/MatchStats';
 
 function Screen() {
   const [matchData, setMatchData] = useState({});
@@ -28,7 +29,11 @@ function Screen() {
   const [scorebugStatus, setScorebugStatus] = useState(false);
   const [statsText, setStatsText] = useState(`Welcome to Lachy League on Channel ${import.meta.env.VITE_CHANNEL_NUMBER} `);
   const [statsValue, setStatsValue] = useState('');
-
+  const [fixturesTableData, setFixturesTable] = useState({})
+  const [fixturesTableStatus, setFixturesTableStatus] = useState(false);
+  const [ultraHD, setUltraHD] = useState(false);
+  const [stats, setStats] = useState({})
+  const [statsTableStatus, setStatsTableStatus] = useState(false);
 
   const logoStyle = {
     position: 'absolute',
@@ -250,6 +255,68 @@ function Screen() {
       }
     };
 
+    const fetchFixturesTable = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.fixturesTable !== undefined) {
+          setFixturesTable(response.data.fixturesTable);
+          console.log(response.data.fixturesTable)
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchFixturesTableStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.fixtures_status !== undefined) {
+          setFixturesTableStatus(response.data.fixtures_status);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchUltraHd = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.ultra_hd !== undefined) {
+          setUltraHD(response.data.ultra_hd);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.stats !== undefined) {
+          setStats(response.data.stats);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchStatsTableStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.statsTableStatus !== undefined) {
+          setStatsTableStatus(response.data.statsTableStatus);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+
     const intervalId = setInterval(() => {
       fetchStatusGraphicStatus();
       fetchLiveGraphicStatus();
@@ -264,6 +331,11 @@ function Screen() {
       fetchScorebug();
       fetchStatsStatus();
       fetchStatsText();
+      fetchFixturesTable();
+      fetchFixturesTableStatus();
+      fetchUltraHd();
+      fetchStats();
+      fetchStatsTableStatus();
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -271,14 +343,15 @@ function Screen() {
 
   return (
     <>
-      {/* <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={{ 'home_team': 'penrith-panthers', 'away_team': 'parramatta-eels', 'subtitle': 'NRL Round 1', 'first_player': "Nathan Cleary", 'second_player': "Mitchell Moses" }} /> */}
-      <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} />
-      <StudioUpdate updateStatus={updateStatus} text={text} statsValue={statsValue} />
+      {/* <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={{ 'home_team': 'melbourne-storm', 'away_team': 'parramatta-eels', 'subtitle': 'Coming up' }} /> */}
+      <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} ultrahd={ultraHD} />
+      <StudioUpdate initialMatchData={matchData} updateStatus={updateStatus} text={text} statsValue={statsValue} />
       <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
       <Stats statsText={statsText} statsValue={statsValue} />
-      {/* <FixturesTable /> */}
-      {/* <Commentators /> */}
+      <FixturesTable fixturesTable={fixturesTableData} status={fixturesTableStatus} />
+      <Commentators />
+      <MatchStats statusOfElement={statsTableStatus} initialMatchData={matchData} status={statusOfGame} stats={stats} />
     </>
   );
 }

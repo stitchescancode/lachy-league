@@ -1,12 +1,11 @@
 .scoreboard {
     display: flex;
     align-items: center;
-    position: absolute;
-    left: 3.4rem;
-    top: var(--scoreboardStatus);
+    /* left: 3.4rem; */
+    /* top: var(--scoreboardStatus); */
     background-color: #313131;
     height: 5rem;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     font-family: 'Sour Gummy', sans-serif;
     font-size: 0.8rem;
     color: white;
@@ -33,7 +32,7 @@
 }
 
 .teams {
-    width: 15rem;
+    width: 15.25rem;
     height: 100%;
     display: flex;
     align-items: center;
@@ -43,7 +42,7 @@
 }
 
 .second-teams-div {
-    width: 15rem;
+    width: 17.5rem;
     border-left: 4px solid;
     height: 100%;
     display: flex;
@@ -147,8 +146,8 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    border-top-right-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
     color: #000;
     transition: transform 0.5s ease-out;
     transform: scale(var(--tackle-scale)); /* Using custom property for animation scale */

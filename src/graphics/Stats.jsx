@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Stats({ statsValue, statsText }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +8,17 @@ function Stats({ statsValue, statsText }) {
 
     // Manage the animation state
     const [shouldRender, setShouldRender] = useState(true);
+
+    // New state for countdown
+    const [countdown, setCountdown] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+    });
+
+    // Countdown target variable in the format dd:mm:yy hh:mm:ss
+    const targetTime = "10:03:2025 17:30:00"; // Example format
 
     useEffect(() => {
         const style = document.createElement('style');
@@ -37,6 +49,7 @@ function Stats({ statsValue, statsText }) {
         if (statsValue !== lastCheck) {
             if (statsValue) {
                 setShouldRender(true); // Ensure the element is rendered when statsValue is true
+                resetCountdown(); // Reset countdown when statsValue changes
             } else {
                 // Wait for the animation to complete before removing the element
                 setIsOpen(false);
@@ -49,16 +62,61 @@ function Stats({ statsValue, statsText }) {
         setLastCheck(statsValue); // Update last check state
     }, [statsValue, lastCheck]);
 
-    // Only render the component if `shouldRender` is true
-    if (!shouldRender) {
-        return null;
-    }
+    // Countdown timer logic
+    const resetCountdown = () => {
+        // Parse the targetTime variable (dd:mm:yyyy hh:mm:ss)
+        const [datePart, timePart] = targetTime.split(" ");
+        const [day, month, year] = datePart.split(":").map(Number);
+        const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+        const targetDate = new Date(year, month - 1, day, hours, minutes, seconds); // Convert to Date object
+        const interval = setInterval(() => {
+            const now = new Date();
+            const timeDiff = targetDate - now; // Difference in milliseconds
+
+            if (timeDiff <= 0) {
+                clearInterval(interval); // Stop the interval once the countdown reaches zero
+                setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            setCountdown({ days, hours, minutes, seconds });
+        }, 1000);
+
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    };
 
     return (
-        <div style={styles.stats(isOpen)}>
-            <div style={styles.lachyLeague(isOpen)}>#LACHYLEAGUE</div>
-            <p style={styles.scheduleText}>{text}</p>
-        </div>
+        <AnimatePresence>
+            {shouldRender && (
+                <motion.div
+                    style={styles.stats(isOpen)}
+                    transition={{ type: 'spring' }}
+                    initial={{ width: '0' }}
+                    animate={isOpen ? { width: '100%' } : { width: '0%' }} >
+                    <motion.div
+                        style={styles.lachyLeague(isOpen)}
+                        transition={{ type: 'spring' }}
+                        initial={{ width: 0, position: 'absolute' }}
+                        animate={isOpen ? { width: '20rem', position: 'unset' } : { width: 0, display: 'none' }}
+                    >NRL TONIGHT</motion.div>
+                    <p style={styles.scheduleText}>{text}</p>
+                    {/* {isOpen && (
+                        <div style={styles.countdown}>
+                            <div>
+                                {countdown.days} Days {countdown.hours} Hours {countdown.minutes} Minutes {countdown.seconds} Seconds
+                            </div>
+                        </div>
+                    )} */}
+                </motion.div>
+            )
+            }
+        </AnimatePresence >
     );
 }
 
@@ -72,14 +130,9 @@ const styles = {
         height: '5.5rem', // Increased height
         boxShadow: '0 -4px 10px rgba(0, 0, 0, 0.6)', // More depth
         gap: '2.5rem',
-        fontFamily: '"Sour Gummy", sans-serif',
+        fontFamily: '"Poppins", sans-serif',
         fontSize: '1.4rem', // Scaled-up text
-        opacity: isOpen ? 1 : 0, // Add conditional styling if needed
-        width: isOpen ? '100%' : '0%', // Set width based on isOpen state
-        animation: isOpen
-            ? 'widthAnimationForStatsElement 1s ease-in-out forwards'
-            : 'none', // No closing animation, just immediately hide
-        animationFillMode: 'forwards', // Keep the final state of the animation after it ends
+        width: 0
     }),
 
     lachyLeague: (isOpen) => ({
@@ -89,7 +142,7 @@ const styles = {
         background: '#333', // Dark grey, smooth and professional
         color: 'white',
         fontSize: '1.6rem', // Increased text size
-        fontFamily: '"Sour Gummy", sans-serif',
+        fontFamily: '"Poppins", sans-serif',
         textTransform: 'uppercase',
         fontWeight: 'bold',
         letterSpacing: '1.8px',
@@ -98,11 +151,6 @@ const styles = {
         width: isOpen ? '20rem' : '0', // Animate width only when open
         boxSizing: 'border-box',
         borderTop: '3px solid #555', // Slightly thicker border
-        boxShadow: 'inset 0 0 10px rgba(255, 255, 255, 0.1), 0 0 8px rgba(0, 0, 0, 0.4)',
-        animation: isOpen
-            ? 'widthAnimationForStatsElement 1s ease-in-out forwards'
-            : 'none', // No closing animation, just immediately hide
-        animationFillMode: 'forwards', // Keep the final state of the animation after it ends
     }),
 
     scheduleText: {
@@ -116,6 +164,14 @@ const styles = {
         paddingLeft: '1.5rem',
         opacity: 0.95, // A bit less transparent
     },
+
+    countdown: {
+        color: 'white',
+        fontSize: '1.4rem',
+        fontWeight: 'bold',
+        paddingLeft: '1.5rem',
+        marginTop: '0.5rem',
+    }
 };
 
 export default Stats;

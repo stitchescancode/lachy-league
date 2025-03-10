@@ -1,13 +1,45 @@
 import { useState, useEffect } from 'react';
 import Logo from '../../logos/positive-variant/lachy-league.png';
+import Roosters from '../assets/roosters.webp';
+import Raiders from '../assets/raiders-no-text.svg';
+import Panthers from '../assets/panthers.webp';
+import Storm from '../assets/storm.webp';
+import Manly from '../assets/manly.svg';
+import Titans from '../assets/titans.webp';
+import Broncos from '../assets/broncos.webp';
+import Bulldogs from '../assets/bulldogs.webp';
+import Sharks from '../assets/sharks.webp';
+import Dolphins from '../assets/dolphins.svg';
+import Warriors from '../assets/warriors.webp';
+import Knights from '../assets/knights.webp';
+import Cowboys from '../assets/cowboys.webp';
+import Eels from '../assets/eels.webp';
+import Rabbitohs from '../assets/rabbitohs.svg';
+import Dragons from '../assets/dragons.svg';
+import Tigers from '../assets/tigers.webp';
+import Wigan from '../assets/wigan-warriors.webp';
+import Warrington from '../assets/warrington-wolves.svg';
+import AustraliaWomen from '../assets/australia-jillaroos.svg';
+import EnglishWomen from '../assets/england-lionesses.png';
 
-function StudioUpdate({ updateStatus, text, statsValue }) {
+import NRLTonight from '../programming/nrl-tonight.webp'
+import MattyJohnsSunday from '../programming/sunday-night-with-matty-johns.webp'
+import MattyJohnsLate from '../programming/late-show-with-matty-johns.webp'
+
+import Countdown from './Countdown';
+
+function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
   const [height, setHeight] = useState('0rem'); // Default height set to '0rem'
   const [isVisible, setIsVisible] = useState(updateStatus); // Track visibility of the component
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    setData(initialMatchData);
+  }, [initialMatchData]);
 
   // Inject keyframes for animations into the document once on mount
   useEffect(() => {
-    const style = document.createElement('style'); 23
+    const style = document.createElement('style');
     style.innerHTML = `
       @keyframes backgroundFadeIn {
         0% {
@@ -115,6 +147,20 @@ function StudioUpdate({ updateStatus, text, statsValue }) {
     backgroundColor: '#000000',
     borderTopRightRadius: '10rem',
     borderBottomRightRadius: '10rem',
+    width: '15rem',
+    // No width change for logo and circle; keep them the same
+  };
+
+  const leftDivSingle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 1rem',
+    height: '9.8rem',
+    backgroundColor: '#000000',
+    borderTopRightRadius: '10rem',
+    borderBottomRightRadius: '10rem',
+    width: '9.8rem',
     // No width change for logo and circle; keep them the same
   };
 
@@ -123,20 +169,167 @@ function StudioUpdate({ updateStatus, text, statsValue }) {
     animation: updateStatus ? 'textSlideIn 0.8s ease-out forwards' : 'textSlideOut 0.8s ease-in forwards', // Text sliding in/out
   };
 
-  return (
-    <section style={div} className="section_update">
-      <div style={leftDiv} className="left">
-        <img
-          style={img}
-          src={Logo}
-          alt={`Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`}
-        />
-      </div>
-      <div className="right" style={rightDiv}>
-        <h1>{text || ''}</h1>
-      </div>
-    </section>
-  );
+  const getLogo = (teamName) => {
+    switch (teamName) {
+      case 'Sydney Roosters': return Roosters;
+      case 'Melbourne Storm': return Storm;
+      case 'Canberra Raiders': return Raiders;
+      case 'Penrith Panthers': return Panthers;
+      case 'Manly Warringah Sea Eagles': return Manly;
+      case 'Gold Coast Titans': return Titans;
+      case 'Brisbane Broncos': return Broncos;
+      case 'Canterbury-Bankstown Bulldogs': return Bulldogs;
+      case 'Cronulla Sharks': return Sharks;
+      case 'Dolphins': return Dolphins;
+      case 'New Zealand Warriors': return Warriors;
+      case 'Newcastle Knights': return Knights;
+      case 'North Queensland Cowboys': return Cowboys;
+      case 'Parramatta Eels': return Eels;
+      case 'South Sydney Rabbitohs': return Rabbitohs;
+      case 'St George Illawarra Dragons': return Dragons;
+      case 'Wests Tigers': return Tigers;
+      case 'Wigan Warriors': return Wigan;
+      case 'Warrington Wolves': return Warrington;
+      case 'Australia Jillaroos': return AustraliaWomen;
+      case 'England Lionesses': return EnglishWomen;
+      default: return '';
+    }
+  };
+
+  const teamsLogo = 'single-team';
+
+  if (teamsLogo === false) {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <img
+            style={img}
+            src={Logo}
+            alt={`Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`}
+          />
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  } else if (teamsLogo === true) {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <div style={{
+            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+            width: '13rem',
+            height: '7rem',
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+            borderRadius: '10rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center', // Center content vertically
+          }}
+            className="circle">
+            <img style={{ height: '4rem', marginRight: '1rem' }} src={getLogo(data.home_team)} alt="" />
+            <img style={{ height: '4rem' }} src={getLogo(data.away_team)} alt="" />
+          </div>
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  } else if (teamsLogo === 'single-team') {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <div style={{
+            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+            width: '7rem',
+            height: '7rem',
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+            borderRadius: '10rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center', // Center content vertically
+          }}
+            className="circle">
+            <img style={{ height: '4rem' }} src={getLogo('Newcastle Knights')} alt="" />
+          </div>
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  } else if (teamsLogo === "nrl-tonight") {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <div style={{
+            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+            width: '13rem',
+            height: '7rem',
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+            borderRadius: '10rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center', // Center content vertically
+          }}
+            className="circle">
+            <img style={{ height: '4rem' }} src={NRLTonight} alt="" />
+          </div>
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  } else if (teamsLogo === "matty-johns-sunday") {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <div style={{
+            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+            width: '13rem',
+            height: '7rem',
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+            borderRadius: '10rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center', // Center content vertically
+          }}
+            className="circle">
+            <img style={{ height: '6.5rem' }} src={MattyJohnsSunday} alt="" />
+          </div>
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  } else if (teamsLogo === "matty-johns-late") {
+    return (
+      <section style={div} className="section_update">
+        <div style={leftDiv} className="left">
+          <div style={{
+            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+            width: '13rem',
+            height: '7rem',
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+            borderRadius: '10rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center', // Center content vertically
+          }}
+            className="circle">
+            <img style={{ height: '6.5rem' }} src={MattyJohnsLate} alt="" />
+          </div>
+        </div>
+        <div className="right" style={rightDiv}>
+          <h1>{text || ''}</h1>
+        </div>
+      </section>
+    );
+  }
 }
 
 export default StudioUpdate;

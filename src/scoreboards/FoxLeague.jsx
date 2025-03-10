@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Roosters from '../assets/roosters.webp';
-import Raiders from '../assets/raiders.webp';
+import Raiders from '../assets/raiders.svg';
 import Panthers from '../assets/panthers.webp';
 import Storm from '../assets/storm.webp';
 import Manly from '../assets/manly.svg';
@@ -24,6 +24,7 @@ import EnglishWomen from '../assets/england-lionesses.png';
 import Penalty from '../graphics/Penalty'
 
 import '../css/FoxLeagueScoreboard.css';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function darkenColor(hex, percentage) {
     if (!hex.startsWith('#')) hex = `#${hex}`;
@@ -50,11 +51,11 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     const [middleVisible, setMiddleVisible] = useState(false);
     const [scoreboardWidth, setScoreboardWidth] = useState('30rem');
     const [scoresValue, setScores] = useState({})
+    const [elementStatus, setElementStatus] = useState(false)
 
     useEffect(() => {
         if (initialMatchData) {
             setMatchData(initialMatchData);
-            console.log(initialMatchData)
         }
     }, [initialMatchData]);
 
@@ -63,6 +64,10 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
             setScores(scores);
         }
     }, [scores]);
+
+    useEffect(() => {
+        setElementStatus(scoreboardStatus)
+    }, [scoreboardStatus])
 
     const checkStatusChange = () => {
         setInterval(() => {
@@ -94,19 +99,19 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
 
     useEffect(() => {
         // Check the initial status and set the middle visibility and scoreboard width accordingly
-        if (status === 0) {
+        if (statusOfGame === 0) {
             setMiddleVisible(false);
-            setScoreboardWidth('30rem');
+            setScoreboardWidth('35rem');
         } else {
             setMiddleVisible(true);
-            setScoreboardWidth('50rem');
+            setScoreboardWidth('52.5rem');
         }
 
         // Optionally, cleanup or reset if the component is about to be unmounted or updated
         return () => {
             // Reset state if necessary, like clearing animations or data
         };
-    }, [status]); // Only trigger this effect when `status` changes    
+    }, [statusOfGame, fullCompleteValue]); // Only trigger this effect when `status` changes    
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -122,17 +127,6 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     useEffect(() => {
         setScoreboardAnimationTrigger(true);
     }, []);
-
-    useEffect(() => {
-        if (!scoreboardStatus && lastActive === true) {
-            setLastActive(false);
-            setTimeout(() => { }, 500); // Delay animation
-        }
-    }, [scoreboardStatus, lastActive]);
-
-    if (!scoreboardStatus) {
-        return null;
-    }
 
     const getColor = (teamName) => {
         switch (teamName) {
@@ -165,7 +159,7 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
         switch (teamName) {
             case 'Sydney Roosters': return ['0rem', '-.6rem', '-1.4rem', '0rem', '6rem'];
             case 'Melbourne Storm': return ['0rem', '-1.9rem', '-1.5rem', '0rem', '5rem'];
-            case 'Canberra Raiders': return ['0rem', '-1.975rem', '-1.9rem', '0rem', '7rem'];
+            case 'Canberra Raiders': return ['0rem', '-1.975rem', '-2.9rem', '0rem', '7rem'];
             case 'Penrith Panthers': return ['0rem', '-4.2rem', '-2.7rem', '0rem', '9rem']; // Right, left, top, bottom
             case 'Manly Warringah Sea Eagles': return '#6F0F3B';
             case 'Gold Coast Titans': return ['0rem', '-0.5rem', '0rem', '0rem', '4rem'];
@@ -254,105 +248,122 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     };
 
     return (
-        <>
-            <div
-                className="scoreboard"
-                style={{
-                    '--scoreboard-trigger': scoreboardWidth,
-                    '--animToPlay': lastActive ? 'expandWidth' : 'removeWidth',
-                    '--scoreboardStatus': statusOfGame ? '2.3rem' : '2.7rem',
-                    '--home_image_pos_right': getImageSize(matchData.home_team)[0],
-                    '--home_image_pos_left': getImageSize(matchData.home_team)[1],
-                    '--home_image_pos_top': getImageSize(matchData.home_team)[2],
-                    '--home_image_pos_bottom': getImageSize(matchData.home_team)[3],
-                    '--home_image_size': getImageSize(matchData.home_team)[4],
-                    '--away_image_pos_right': getImageSize(matchData.away_team)[0],
-                    '--away_image_pos_left': getImageSize(matchData.away_team)[1],
-                    '--away_image_pos_top': getImageSize(matchData.away_team)[2],
-                    '--away_image_pos_bottom': getImageSize(matchData.away_team)[3],
-                    '--away_image_size': getImageSize(matchData.away_team)[4],
-                }}
-            >
-                <div className="teams" style={{ '--home-team-color': home_team_color, '--home-team-darkened-color': home_team_darkened_color }}>
-                    <div className="home-logo-wrapper" style={{ '--home_team_color': home_team_color, '--home_team_darkened_color': home_team_darkened_color }}>
-                        <div className="logo">
-                            <img className="img home_team_img" src={getLogo(matchData.home_team)} alt={matchData.home_team} />
+        <AnimatePresence>
+            if {elementStatus && (
+                <div style={{ position: 'absolute', left: '3.4rem', top: statusOfGame ? '2.3rem' : '2.9rem', display: 'flex' }}>
+                    <div className='scoreboard'>
+                        <motion.div
+                            className="scoreboard"
+                            style={{
+                                '--scoreboard-trigger': scoreboardWidth,
+                                '--animToPlay': lastActive ? 'expandWidth' : 'removeWidth',
+                                '--scoreboardStatus': statusOfGame ? '2.3rem' : '2.9rem',
+                                '--home_image_pos_right': getImageSize(matchData.home_team)[0],
+                                '--home_image_pos_left': getImageSize(matchData.home_team)[1],
+                                '--home_image_pos_top': getImageSize(matchData.home_team)[2],
+                                '--home_image_pos_bottom': getImageSize(matchData.home_team)[3],
+                                '--home_image_size': getImageSize(matchData.home_team)[4],
+                                '--away_image_pos_right': getImageSize(matchData.away_team)[0],
+                                '--away_image_pos_left': getImageSize(matchData.away_team)[1],
+                                '--away_image_pos_top': getImageSize(matchData.away_team)[2],
+                                '--away_image_pos_bottom': getImageSize(matchData.away_team)[3],
+                                '--away_image_size': getImageSize(matchData.away_team)[4],
+                            }}
+                            initial={{ width: '0' }}
+                            transition={scoreboardStatus ? { type: 'spring' } : { type: 'tween', duration: 0.5 }}
+                            animate={scoreboardStatus ? { width: scoreboardWidth } : { opacity: 0 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <motion.div className="teams" style={{ '--home-team-color': home_team_color, '--home-team-darkened-color': home_team_darkened_color }}>
+                                <div className="home-logo-wrapper" style={{ '--home_team_color': home_team_color, '--home_team_darkened_color': home_team_darkened_color }}
+                                    initial={{ width: '20rem' }}
+                                    transition={{ type: 'tween' }}
+                                    animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}>
+                                    <div className="logo">
+                                        <img className="img home_team_img" src={getLogo(matchData.home_team)} alt={matchData.home_team} />
+                                    </div>
+                                </div>
+                                <div className="names">
+                                    <p className="no-margin">{homeTeamName[0]}</p>
+                                    <h1 className="no-margin">{homeTeamName[1]}</h1>
+                                </div>
+                            </motion.div>
+                            <div className="middle" style={{ display: (statusOfGame !== 0 ? 'block' : 'none') }}>
+                                {statusOfGame !== 0 && (
+                                    <>
+                                        <h1>{scoresValue.homeScore} - {scoresValue.awayScore}</h1>
+                                    </>
+                                )}
+                            </div>
+                            <motion.div className="second-teams-div" style={{ '--away-team-color': away_team_color, '--away-team-darkened-color': away_team_darkened_color }}
+                                initial={{ width: '20rem' }}
+                                transition={{ type: 'tween' }}
+                                animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}
+                                exit={{ width: '0', display: 'none' }}>
+                                <div className="away-logo-wrapper" style={{ '--away_team_color': away_team_color, '--away_team_darkened_color': away_team_darkened_color }}>
+                                    <div className="logo">
+                                        <img className="img away_team_img" src={getLogo(matchData.away_team)} alt={matchData.away_team} />
+                                    </div>
+                                </div>
+                                <div className="names">
+                                    <p className="no-margin">{awayTeamName[0]}</p>
+                                    <h1 className="no-margin">{awayTeamName[1]}</h1>
+                                </div>
+                            </motion.div>
+                            {
+                                statusOfGame === 0 ? (
+                                    null
+                                ) : statusOfGame === 1 ? (
+                                    // New functionality for status 1
+                                    <div className="clock">
+                                        <h2 className="no-margin">H1</h2>
+                                        <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
+                                    </div>
+                                ) : statusOfGame === 2 ? (
+                                    <div className="clock">
+                                        <h2 className="no-margin">HALF</h2>
+                                        <h2 className="no-margin">TIME</h2>
+                                    </div>
+                                ) : statusOfGame === 3 ? (
+                                    // New functionality for status 3
+                                    <div className="clock">
+                                        <h2 className="no-margin">H2</h2>
+                                        <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
+                                    </div>
+                                ) : statusOfGame === 4 ? (
+                                    // New functionality for status 4
+                                    <div className="clock">
+                                        <h2 className="no-margin">FULL</h2>
+                                        <h2 className="no-margin">TIME</h2>
+                                    </div>
+                                ) : (
+                                    // Default case if no recognized status
+                                    <div className="unknown-status">
+                                        <h2>Unknown Status</h2>
+                                    </div>
+                                )
+                            }
+                            {/* <Penalty /> */}
+                        </motion.div>
+                    </div>
+                    {fullCompleteValue !== 0 && (
+                        <div className="tackle-count" style={{ height: '5rem', width: '8rem', '--tackle-scale': animationTrigger ? '1.1' : '1' }}>
+                            <h1 style={{ fontFamily: 'Sour Gummy, sans-serif', fontSize: '1.8rem' }} className="no-margin" key={fullCompleteValue}>
+                                {fullCompleteValue === 'zero'
+                                    ? 'ZERO'
+                                    : fullCompleteValue === 1
+                                        ? '1ST'
+                                        : fullCompleteValue === 2
+                                            ? '2ND'
+                                            : fullCompleteValue === 3
+                                                ? '3RD'
+                                                : (fullCompleteValue ? `${fullCompleteValue}TH` : '')}
+                            </h1>
                         </div>
-                    </div>
-                    <div className="names">
-                        <p className="no-margin">{homeTeamName[0]}</p>
-                        <h1 className="no-margin">{homeTeamName[1]}</h1>
-                    </div>
-                </div>
-                <div className="middle" style={{ display: (statusOfGame !== 0 ? 'block' : 'none') }}>
-                    {statusOfGame !== 0 && (
-                        <>
-                            <h1>{scoresValue.homeScore} - {scoresValue.awayScore}</h1>
-                        </>
                     )}
                 </div>
-                <div className="second-teams-div" style={{ '--away-team-color': away_team_color, '--away-team-darkened-color': away_team_darkened_color }}>
-                    <div className="away-logo-wrapper" style={{ '--away_team_color': away_team_color, '--away_team_darkened_color': away_team_darkened_color }}>
-                        <div className="logo">
-                            <img className="img away_team_img" src={getLogo(matchData.away_team)} alt={matchData.away_team} />
-                        </div>
-                    </div>
-                    <div className="names">
-                        <p className="no-margin">{awayTeamName[0]}</p>
-                        <h1 className="no-margin">{awayTeamName[1]}</h1>
-                    </div>
-                </div>
-                {
-                    statusOfGame === 0 ? (
-                        null
-                    ) : statusOfGame === 1 ? (
-                        // New functionality for status 1
-                        <div className="clock">
-                            <h2 className="no-margin">H1</h2>
-                            <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                        </div>
-                    ) : statusOfGame === 2 ? (
-                        <div className="clock">
-                            <h2 className="no-margin">HALF</h2>
-                            <h2 className="no-margin">TIME</h2>
-                        </div>
-                    ) : statusOfGame === 3 ? (
-                        // New functionality for status 3
-                        <div className="clock">
-                            <h2 className="no-margin">H2</h2>
-                            <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                        </div>
-                    ) : statusOfGame === 4 ? (
-                        // New functionality for status 4
-                        <div className="clock">
-                            <h2 className="no-margin">FULL</h2>
-                            <h2 className="no-margin">TIME</h2>
-                        </div>
-                    ) : (
-                        // Default case if no recognized status
-                        <div className="unknown-status">
-                            <h2>Unknown Status</h2>
-                        </div>
-                    )
-                }
-                {fullCompleteValue !== 0 && (
-                    <div className="tackle-count" style={{ '--tackle-scale': animationTrigger ? '1.1' : '1' }}>
-                        <h1 className="no-margin" key={fullCompleteValue}>
-                            {fullCompleteValue === 'zero'
-                                ? 'ZERO'
-                                : fullCompleteValue === 1
-                                    ? '1ST'
-                                    : fullCompleteValue === 2
-                                        ? '2ND'
-                                        : fullCompleteValue === 3
-                                            ? '3RD'
-                                            : `${fullCompleteValue}TH`}
-                        </h1>
-                    </div>
-                )}
-                {/* <Penalty /> */}
-            </div>
-        </>
+            )}
+        </AnimatePresence>
     );
 }
 

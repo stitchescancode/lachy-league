@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Im
 import Screen from './Screen.jsx';
 import TimeUntilNextBroadcast from './graphics/TimeUntilNextBroadcast.jsx';  // Example of another component to route to
 
-// Import your global CSS styles
 import './App.css';
 
 createRoot(document.getElementById('root')).render(
