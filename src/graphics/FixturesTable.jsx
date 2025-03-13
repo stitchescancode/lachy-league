@@ -16,7 +16,7 @@ import Eels from '../assets/eels.webp';
 import Rabbitohs from '../assets/rabbitohs.svg';
 import Dragons from '../assets/dragons.svg';
 import Tigers from '../assets/tigers.webp';
-import Wigan from '../assets/wigan-warriors.webp';
+import Wigan from '../assets/wigan.webp';
 import Warrington from '../assets/warrington-wolves.svg';
 import AustraliaWomen from '../assets/australia-jillaroos.svg';
 import EnglishWomen from '../assets/england-lionesses.png';
@@ -162,13 +162,14 @@ function FixturesTable({ fixturesTable, status }) {
                         fontSize: '.85rem',
                         position: 'absolute',
                         bottom: '2rem',
-                        left: '3rem'
+                        left: '3rem',
+                        width: 'max-content'
                     }}
                     className="container"
-                    initial={{ 'width': 0 }}
-                    animate={statusValue ? { width: '21rem' } : { width: 0 }}
+                    initial={{ transform: 'scaleX(0)', transformOrigin: 'left' }}
+                    animate={statusValue ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
                     transition={statusValue ? { type: 'spring' } : { type: 'tween' }}
-                    exit={{ width: 0, display: 'none', overflow: 'hidden', visibility: 'hidden' }}>
+                    exit={{ transform: 'scaleX(0)', transformOrigin: 'right', transition: { type: 'tween' } }}>
                     <div style={{
                         display: 'flex',
                         justifyContent: 'center',

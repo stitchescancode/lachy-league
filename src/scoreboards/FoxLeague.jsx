@@ -16,7 +16,7 @@ import Eels from '../assets/eels.webp';
 import Rabbitohs from '../assets/rabbitohs.svg';
 import Dragons from '../assets/dragons.svg';
 import Tigers from '../assets/tigers.webp';
-import Wigan from '../assets/wigan-warriors.webp';
+import Wigan from '../assets/wigan.webp';
 import Warrington from '../assets/warrington-wolves.svg';
 import AustraliaWomen from '../assets/australia-jillaroos.svg';
 import EnglishWomen from '../assets/england-lionesses.png';
@@ -24,7 +24,7 @@ import EnglishWomen from '../assets/england-lionesses.png';
 import Penalty from '../graphics/Penalty'
 
 import '../css/FoxLeagueScoreboard.css';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, transform } from 'framer-motion';
 
 function darkenColor(hex, percentage) {
     if (!hex.startsWith('#')) hex = `#${hex}`;
@@ -42,7 +42,7 @@ function darkenColor(hex, percentage) {
 
 const width = '15rem';
 
-function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, statusOfGame, scores, clock }) {
+function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, statusOfGame, scores, clock, statsStatus }) {
     const [matchData, setMatchData] = useState(initialMatchData || {});
     const [animationTrigger, setAnimationTrigger] = useState(false);
     const [scoreboardAnimationTrigger, setScoreboardAnimationTrigger] = useState(false);
@@ -51,7 +51,8 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     const [middleVisible, setMiddleVisible] = useState(false);
     const [scoreboardWidth, setScoreboardWidth] = useState('30rem');
     const [scoresValue, setScores] = useState({})
-    const [elementStatus, setElementStatus] = useState(false)
+    const [elementStatus, setElementStatus] = useState(false);
+    const [scoreboardStatsStatus, setScoreboardStatsStatus] = useState(false)
 
     useEffect(() => {
         if (initialMatchData) {
@@ -64,6 +65,10 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
             setScores(scores);
         }
     }, [scores]);
+
+    useEffect(() => {
+        setScoreboardStatsStatus(statsStatus)
+    }, [statsStatus])
 
     useEffect(() => {
         setElementStatus(scoreboardStatus)
@@ -250,120 +255,141 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     return (
         <AnimatePresence>
             if {elementStatus && (
-                <div style={{ position: 'absolute', left: '3.4rem', top: statusOfGame ? '2.3rem' : '2.9rem', display: 'flex' }}>
-                    <div className='scoreboard'>
-                        <motion.div
-                            className="scoreboard"
-                            style={{
-                                '--scoreboard-trigger': scoreboardWidth,
-                                '--animToPlay': lastActive ? 'expandWidth' : 'removeWidth',
-                                '--scoreboardStatus': statusOfGame ? '2.3rem' : '2.9rem',
-                                '--home_image_pos_right': getImageSize(matchData.home_team)[0],
-                                '--home_image_pos_left': getImageSize(matchData.home_team)[1],
-                                '--home_image_pos_top': getImageSize(matchData.home_team)[2],
-                                '--home_image_pos_bottom': getImageSize(matchData.home_team)[3],
-                                '--home_image_size': getImageSize(matchData.home_team)[4],
-                                '--away_image_pos_right': getImageSize(matchData.away_team)[0],
-                                '--away_image_pos_left': getImageSize(matchData.away_team)[1],
-                                '--away_image_pos_top': getImageSize(matchData.away_team)[2],
-                                '--away_image_pos_bottom': getImageSize(matchData.away_team)[3],
-                                '--away_image_size': getImageSize(matchData.away_team)[4],
-                            }}
-                            initial={{ width: '0' }}
-                            transition={scoreboardStatus ? { type: 'spring' } : { type: 'tween', duration: 0.5 }}
-                            animate={scoreboardStatus ? { width: scoreboardWidth } : { opacity: 0 }}
-                            exit={{ opacity: 0 }}
-                        >
-                            <motion.div className="teams" style={{ '--home-team-color': home_team_color, '--home-team-darkened-color': home_team_darkened_color }}>
-                                <div className="home-logo-wrapper" style={{ '--home_team_color': home_team_color, '--home_team_darkened_color': home_team_darkened_color }}
-                                    initial={{ width: '20rem' }}
-                                    transition={{ type: 'tween' }}
-                                    animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}>
-                                    <div className="logo">
-                                        <img className="img home_team_img" src={getLogo(matchData.home_team)} alt={matchData.home_team} />
+                <>
+                    <div style={{ position: 'absolute', left: '3.4rem', top: statusOfGame ? '2.3rem' : '2.9rem' }}>
+                        <div style={{ display: 'flex' }}>
+                            <div className='scoreboard'>
+                                <motion.div
+                                    className="scoreboard"
+                                    style={{
+                                        '--scoreboard-trigger': scoreboardWidth,
+                                        '--animToPlay': lastActive ? 'expandWidth' : 'removeWidth',
+                                        '--scoreboardStatus': statusOfGame ? '2.3rem' : '2.9rem',
+                                        '--home_image_pos_right': getImageSize(matchData.home_team)[0],
+                                        '--home_image_pos_left': getImageSize(matchData.home_team)[1],
+                                        '--home_image_pos_top': getImageSize(matchData.home_team)[2],
+                                        '--home_image_pos_bottom': getImageSize(matchData.home_team)[3],
+                                        '--home_image_size': getImageSize(matchData.home_team)[4],
+                                        '--away_image_pos_right': getImageSize(matchData.away_team)[0],
+                                        '--away_image_pos_left': getImageSize(matchData.away_team)[1],
+                                        '--away_image_pos_top': getImageSize(matchData.away_team)[2],
+                                        '--away_image_pos_bottom': getImageSize(matchData.away_team)[3],
+                                        '--away_image_size': getImageSize(matchData.away_team)[4],
+                                    }}
+                                    initial={{ width: '0' }}
+                                    transition={scoreboardStatus ? { type: 'spring' } : { type: 'tween', duration: 0.5 }}
+                                    animate={scoreboardStatus ? { width: scoreboardWidth } : { opacity: 0 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    <motion.div className="teams" style={{ '--home-team-color': home_team_color, '--home-team-darkened-color': home_team_darkened_color }}>
+                                        <div className="home-logo-wrapper" style={{ '--home_team_color': home_team_color, '--home_team_darkened_color': home_team_darkened_color }}
+                                            initial={{ width: '20rem' }}
+                                            transition={{ type: 'tween' }}
+                                            animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}>
+                                            <div className="logo">
+                                                <img className="img home_team_img" src={getLogo(matchData.home_team)} alt={matchData.home_team} />
+                                            </div>
+                                        </div>
+                                        <div className="names">
+                                            <p className="no-margin">{homeTeamName[0]}</p>
+                                            <h1 className="no-margin">{homeTeamName[1]}</h1>
+                                        </div>
+                                    </motion.div>
+                                    <div className="middle" style={{ display: (statusOfGame !== 0 ? 'block' : 'none') }}>
+                                        {statusOfGame !== 0 && (
+                                            <>
+                                                <h1>{scoresValue.homeScore} - {scoresValue.awayScore}</h1>
+                                            </>
+                                        )}
                                     </div>
-                                </div>
-                                <div className="names">
-                                    <p className="no-margin">{homeTeamName[0]}</p>
-                                    <h1 className="no-margin">{homeTeamName[1]}</h1>
-                                </div>
-                            </motion.div>
-                            <div className="middle" style={{ display: (statusOfGame !== 0 ? 'block' : 'none') }}>
-                                {statusOfGame !== 0 && (
-                                    <>
-                                        <h1>{scoresValue.homeScore} - {scoresValue.awayScore}</h1>
-                                    </>
-                                )}
+                                    <motion.div className="second-teams-div" style={{ '--away-team-color': away_team_color, '--away-team-darkened-color': away_team_darkened_color }}
+                                        initial={{ width: '20rem' }}
+                                        transition={{ type: 'tween' }}
+                                        animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}
+                                        exit={{ width: '0', display: 'none' }}>
+                                        <div className="away-logo-wrapper" style={{ '--away_team_color': away_team_color, '--away_team_darkened_color': away_team_darkened_color }}>
+                                            <div className="logo">
+                                                <img className="img away_team_img" src={getLogo(matchData.away_team)} alt={matchData.away_team} />
+                                            </div>
+                                        </div>
+                                        <div className="names">
+                                            <p className="no-margin">{awayTeamName[0]}</p>
+                                            <h1 className="no-margin">{awayTeamName[1]}</h1>
+                                        </div>
+                                    </motion.div>
+                                    {
+                                        statusOfGame === 0 ? (
+                                            null
+                                        ) : statusOfGame === 1 ? (
+                                            // New functionality for status 1
+                                            <div className="clock">
+                                                <h2 className="no-margin">H1</h2>
+                                                <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
+                                            </div>
+                                        ) : statusOfGame === 2 ? (
+                                            <div className="clock">
+                                                <h2 className="no-margin">HALF</h2>
+                                                <h2 className="no-margin">TIME</h2>
+                                            </div>
+                                        ) : statusOfGame === 3 ? (
+                                            // New functionality for status 3
+                                            <div className="clock">
+                                                <h2 className="no-margin">H2</h2>
+                                                <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
+                                            </div>
+                                        ) : statusOfGame === 4 ? (
+                                            // New functionality for status 4
+                                            <div className="clock">
+                                                <h2 className="no-margin">FULL</h2>
+                                                <h2 className="no-margin">TIME</h2>
+                                            </div>
+                                        ) : (
+                                            // Default case if no recognized status
+                                            <div className="unknown-status">
+                                                <h2>Unknown Status</h2>
+                                            </div>
+                                        )
+                                    }
+                                </motion.div>
                             </div>
-                            <motion.div className="second-teams-div" style={{ '--away-team-color': away_team_color, '--away-team-darkened-color': away_team_darkened_color }}
-                                initial={{ width: '20rem' }}
-                                transition={{ type: 'tween' }}
-                                animate={scoreboardStatus ? { width: '15rem' } : { width: 0 }}
-                                exit={{ width: '0', display: 'none' }}>
-                                <div className="away-logo-wrapper" style={{ '--away_team_color': away_team_color, '--away_team_darkened_color': away_team_darkened_color }}>
-                                    <div className="logo">
-                                        <img className="img away_team_img" src={getLogo(matchData.away_team)} alt={matchData.away_team} />
-                                    </div>
+                            {fullCompleteValue !== 0 && (
+                                <div className="tackle-count" style={{ height: '5rem', width: '8rem', '--tackle-scale': animationTrigger ? '1.1' : '1' }}>
+                                    <h1 style={{ fontFamily: 'Sour Gummy, sans-serif', fontSize: '1.8rem' }} className="no-margin" key={fullCompleteValue}>
+                                        {fullCompleteValue === 'zero'
+                                            ? 'ZERO'
+                                            : fullCompleteValue === 1
+                                                ? '1ST'
+                                                : fullCompleteValue === 2
+                                                    ? '2ND'
+                                                    : fullCompleteValue === 3
+                                                        ? '3RD'
+                                                        : (fullCompleteValue ? `${fullCompleteValue}TH` : '')}
+                                    </h1>
                                 </div>
-                                <div className="names">
-                                    <p className="no-margin">{awayTeamName[0]}</p>
-                                    <h1 className="no-margin">{awayTeamName[1]}</h1>
-                                </div>
-                            </motion.div>
-                            {
-                                statusOfGame === 0 ? (
-                                    null
-                                ) : statusOfGame === 1 ? (
-                                    // New functionality for status 1
-                                    <div className="clock">
-                                        <h2 className="no-margin">H1</h2>
-                                        <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                                    </div>
-                                ) : statusOfGame === 2 ? (
-                                    <div className="clock">
-                                        <h2 className="no-margin">HALF</h2>
-                                        <h2 className="no-margin">TIME</h2>
-                                    </div>
-                                ) : statusOfGame === 3 ? (
-                                    // New functionality for status 3
-                                    <div className="clock">
-                                        <h2 className="no-margin">H2</h2>
-                                        <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                                    </div>
-                                ) : statusOfGame === 4 ? (
-                                    // New functionality for status 4
-                                    <div className="clock">
-                                        <h2 className="no-margin">FULL</h2>
-                                        <h2 className="no-margin">TIME</h2>
-                                    </div>
-                                ) : (
-                                    // Default case if no recognized status
-                                    <div className="unknown-status">
-                                        <h2>Unknown Status</h2>
-                                    </div>
-                                )
-                            }
-                            {/* <Penalty /> */}
+                            )}
+                        </div>
+                        {/* <Penalty /> */}
+                        <motion.div
+                            style={{ width: '26.25rem', background: 'linear-gradient(90deg, #313131, #414141)', fontFamily: "Sour Gummy, sans-serif", color: 'white', padding: '.75rem 4rem', boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)', borderBottomRightRadius: '1rem', borderBottomLeftRadius: '1rem' }}
+                            initial={{ transform: 'scaleY(0)' }}
+                            transition={{ delay: .5 }}
+                            animate={scoreboardStatsStatus ? { transform: 'scaleY(1)', transformOrigin: 'top' } : { transform: 'scaleY(0)', transformOrigin: 'top' }}>
+                            <div style={{ height: '2rem', overflow: 'hidden', position: 'relative' }}>
+                                <motion.div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'absolute', width: '26.25rem', top: '-2rem' }}
+                                    initial={{ top: '-2rem' }}
+                                    transition={{ delay: 1 }}
+                                    animate={{ top: '0rem' }}>
+                                    <h2 style={{ margin: '0', color: getColor(matchData.home_team) }}>5</h2>
+                                    <h2 style={{ margin: '0', textAlign: 'center' }}>Linebreaks</h2>
+                                    <h2 style={{ margin: '0', color: getColor(matchData.away_team) }}>19</h2>
+                                </motion.div>
+                            </div>
                         </motion.div>
                     </div>
-                    {fullCompleteValue !== 0 && (
-                        <div className="tackle-count" style={{ height: '5rem', width: '8rem', '--tackle-scale': animationTrigger ? '1.1' : '1' }}>
-                            <h1 style={{ fontFamily: 'Sour Gummy, sans-serif', fontSize: '1.8rem' }} className="no-margin" key={fullCompleteValue}>
-                                {fullCompleteValue === 'zero'
-                                    ? 'ZERO'
-                                    : fullCompleteValue === 1
-                                        ? '1ST'
-                                        : fullCompleteValue === 2
-                                            ? '2ND'
-                                            : fullCompleteValue === 3
-                                                ? '3RD'
-                                                : (fullCompleteValue ? `${fullCompleteValue}TH` : '')}
-                            </h1>
-                        </div>
-                    )}
-                </div>
-            )}
-        </AnimatePresence>
+                </>
+            )
+            }
+        </AnimatePresence >
     );
 }
 

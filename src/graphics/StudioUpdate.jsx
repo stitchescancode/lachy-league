@@ -28,10 +28,22 @@ import MattyJohnsLate from '../programming/late-show-with-matty-johns.webp'
 
 import Countdown from './Countdown';
 
+import { AnimatePresence, motion } from 'framer-motion';
+
 function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
   const [height, setHeight] = useState('0rem'); // Default height set to '0rem'
   const [isVisible, setIsVisible] = useState(updateStatus); // Track visibility of the component
   const [data, setData] = useState({});
+
+  useEffect(() => {
+    if (!updateStatus) {
+      setTimeout(() => {
+        setIsVisible(false); // Hide the component after the animation duration
+      }, 1000); // Wait for the animation (1 second)
+    } else {
+      setIsVisible(true);
+    }
+  }, [updateStatus]);
 
   useEffect(() => {
     setData(initialMatchData);
@@ -101,19 +113,9 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     }
   }, [statsValue]);
 
-  useEffect(() => {
-    if (!updateStatus) {
-      setTimeout(() => {
-        setIsVisible(false); // Hide the component after the animation duration
-      }, 1000); // Wait for the animation (1 second)
-    } else {
-      setIsVisible(true);
-    }
-  }, [updateStatus]);
-
-  if (!isVisible) {
-    return null; // Return null to remove the component after animation
-  }
+  // if (!isVisible) {
+  //   return null; // Return null to remove the component after animation
+  // }
 
   const div = {
     position: 'absolute',
@@ -128,9 +130,6 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     fontFamily: 'Sour Gummy, sans-serif',
     color: 'white',
     textTransform: 'uppercase',
-    animation: updateStatus
-      ? 'backgroundFadeIn 1s ease-out forwards'
-      : 'backgroundFadeOut 1s ease-in forwards', // Background fade in/out
     boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)', // Stronger drop shadow
   };
 
@@ -166,7 +165,6 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
 
   const rightDiv = {
     position: 'relative',
-    animation: updateStatus ? 'textSlideIn 0.8s ease-out forwards' : 'textSlideOut 0.8s ease-in forwards', // Text sliding in/out
   };
 
   const getLogo = (teamName) => {
@@ -196,26 +194,38 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     }
   };
 
-  const teamsLogo = 'single-team';
+  const teamsLogo = false;
 
   if (teamsLogo === false) {
     return (
-      <section style={div} className="section_update">
-        <div style={leftDiv} className="left">
-          <img
-            style={img}
-            src={Logo}
-            alt={`Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`}
-          />
-        </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
-      </section>
+      <AnimatePresence>
+        isVisible && (
+        <motion.section style={div} className="section_update"
+          initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+          transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+          animate={isVisible ? { transform: 'scaleX(1)', transformOrigin: 'left' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+          exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
+          <div style={leftDiv} className="left">
+            <img
+              style={img}
+              src={Logo}
+              alt={`Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`}
+            />
+          </div>
+          <div className="right" style={rightDiv}>
+            <h1>{text || ''}</h1>
+          </div>
+        </motion.section>
+        )
+      </AnimatePresence>
     );
   } else if (teamsLogo === true) {
     return (
-      <section style={div} className="section_update">
+      <motion.section style={div} className="section_update"
+        initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
             background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
@@ -235,11 +245,15 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
         <div className="right" style={rightDiv}>
           <h1>{text || ''}</h1>
         </div>
-      </section>
+      </motion.section>
     );
   } else if (teamsLogo === 'single-team') {
     return (
-      <section style={div} className="section_update">
+      <motion.section style={div} className="section_update"
+        initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
             background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
@@ -258,11 +272,15 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
         <div className="right" style={rightDiv}>
           <h1>{text || ''}</h1>
         </div>
-      </section>
+      </motion.section>
     );
   } else if (teamsLogo === "nrl-tonight") {
     return (
-      <section style={div} className="section_update">
+      <motion.section style={div} className="section_update"
+        initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
             background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
@@ -281,11 +299,15 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
         <div className="right" style={rightDiv}>
           <h1>{text || ''}</h1>
         </div>
-      </section>
+      </motion.section>
     );
   } else if (teamsLogo === "matty-johns-sunday") {
     return (
-      <section style={div} className="section_update">
+      <motion.section style={div} className="section_update"
+        initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
             background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
@@ -304,30 +326,38 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
         <div className="right" style={rightDiv}>
           <h1>{text || ''}</h1>
         </div>
-      </section>
+      </motion.section>
     );
   } else if (teamsLogo === "matty-johns-late") {
     return (
-      <section style={div} className="section_update">
-        <div style={leftDiv} className="left">
-          <div style={{
-            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
-            width: '13rem',
-            height: '7rem',
-            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
-            borderRadius: '10rem',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center', // Center content vertically
-          }}
-            className="circle">
-            <img style={{ height: '6.5rem' }} src={MattyJohnsLate} alt="" />
+      <AnimatePresence>
+        isVisible && (
+        <motion.section style={div} className="section_update"
+          initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
+          transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
+          animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+          exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
+          <div style={leftDiv} className="left">
+            <div style={{
+              background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+              width: '13rem',
+              height: '7rem',
+              border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+              borderRadius: '10rem',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center', // Center content vertically
+            }}
+              className="circle">
+              <img style={{ height: '6.5rem' }} src={MattyJohnsLate} alt="" />
+            </div>
           </div>
-        </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
-      </section>
+          <div className="right" style={rightDiv}>
+            <h1>{text || ''}</h1>
+          </div>
+        </motion.section>
+        )
+      </AnimatePresence>
     );
   }
 }

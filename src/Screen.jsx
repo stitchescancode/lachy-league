@@ -15,6 +15,9 @@ import Commentators from './graphics/Commentators';
 import BottomNextGame from './graphics/BottomNextGame'
 import MatchStats from './graphics/MatchStats';
 
+import Copyright from './graphics/Copyright';
+import Ladder from './graphics/Ladder';
+
 function Screen() {
   const [matchData, setMatchData] = useState({});
   const [updateStatus, setUpdateStatus] = useState(false);
@@ -34,6 +37,11 @@ function Screen() {
   const [ultraHD, setUltraHD] = useState(false);
   const [stats, setStats] = useState({})
   const [statsTableStatus, setStatsTableStatus] = useState(false);
+  const [bottomNextData, setBottomNextGame] = useState({})
+  const [bottomNextStatus, setBottomNextStatus] = useState(false);
+  const [commentatorStatus, setCommentatorStatus] = useState(false);
+  const [commentatorTable, setCommentatorTable] = useState([]);
+  const [scoreboardStatsStatus, setScoreboardStatsStatus] = useState(false)
 
   const logoStyle = {
     position: 'absolute',
@@ -316,6 +324,66 @@ function Screen() {
         console.error("Error fetching graphic status:", err);
       }
     };
+    const fetchBottomNextGame = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.bottomNextGameData !== undefined) {
+          setBottomNextGame(response.data.bottomNextGameData);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchBottomNextStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.bottomNextGameStatus !== undefined) {
+          setBottomNextStatus(response.data.bottomNextGameStatus);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchCommentatorStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.commentatorStatus !== undefined) {
+          setCommentatorStatus(response.data.commentatorStatus);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchCommentatorTable = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.commentatorTable !== undefined) {
+          setCommentatorTable(response.data.commentatorTable);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchScoreboardStatsStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.scoreboardStats !== undefined) {
+          setScoreboardStatsStatus(response.data.scoreboardStats);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
 
     const intervalId = setInterval(() => {
       fetchStatusGraphicStatus();
@@ -336,6 +404,11 @@ function Screen() {
       fetchUltraHd();
       fetchStats();
       fetchStatsTableStatus();
+      fetchBottomNextGame();
+      fetchBottomNextStatus();
+      fetchCommentatorStatus();
+      fetchCommentatorTable();
+      fetchScoreboardStatsStatus();
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -343,15 +416,17 @@ function Screen() {
 
   return (
     <>
-      {/* <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={{ 'home_team': 'melbourne-storm', 'away_team': 'parramatta-eels', 'subtitle': 'Coming up' }} /> */}
+      {/* <Ladder /> */}
+      <Commentators status={commentatorStatus} jsonData={commentatorTable} />
+      <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={bottomNextData} status={bottomNextStatus} />
       <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} ultrahd={ultraHD} />
       <StudioUpdate initialMatchData={matchData} updateStatus={updateStatus} text={text} statsValue={statsValue} />
-      <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} />
+      <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} statsStatus={scoreboardStatsStatus} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
       <Stats statsText={statsText} statsValue={statsValue} />
       <FixturesTable fixturesTable={fixturesTableData} status={fixturesTableStatus} />
-      <Commentators />
       <MatchStats statusOfElement={statsTableStatus} initialMatchData={matchData} status={statusOfGame} stats={stats} />
+      {/* <Copyright /> */}
     </>
   );
 }

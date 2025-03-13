@@ -16,7 +16,7 @@ import Eels from '../assets/eels.webp';
 import Rabbitohs from '../assets/rabbitohs.svg';
 import Dragons from '../assets/dragons.svg';
 import Tigers from '../assets/tigers.webp';
-import Wigan from '../assets/wigan-warriors.webp';
+import Wigan from '../assets/wigan.webp';
 import Warrington from '../assets/warrington-wolves.svg';
 import AustraliaWomen from '../assets/australia-jillaroos.svg';
 import EnglishWomen from '../assets/england-lionesses.png';
@@ -71,7 +71,7 @@ const getImageSize = (teamName) => {
     switch (teamName) {
         case 'Sydney Roosters': return ['0rem', '-.6rem', '-1.4rem', '0rem', '7rem'];
         case 'Melbourne Storm': return ['0rem', '-1.9rem', '-1.5rem', '0rem', '6rem'];
-        case 'Canberra Raiders': return ['0rem', '-1.975rem', '-2.9rem', '0rem', '8rem'];
+        case 'Canberra Raiders': return ['0rem', '-1.375rem', '-2.9rem', '0rem', '8rem'];
         case 'Penrith Panthers': return ['0rem', '-8.2rem', '-1.4rem', '0rem', '8rem']; // Right, left, top, bottom
         case 'Manly Warringah Sea Eagles': return ['0rem', '0rem', '0rem', '0rem', '4rem'];
         case 'Gold Coast Titans': return ['0rem', '-0.5rem', '0rem', '0rem', '5rem'];
@@ -148,13 +148,13 @@ function MatchStats({ initialMatchData, status, stats, statusOfElement }) {
         <AnimatePresence>
             {statsTableStatus && (
                 <motion.div
-                    style={{ backgroundColor: '#313131', fontFamily: 'Sour Gummy, sans-serif', width: '25rem', padding: '1rem', position: 'absolute', left: '2rem', bottom: '2rem', filter: 'scale(0.6)', overflow: 'hidden' }}
+                    style={{ backgroundColor: '#313131', fontFamily: 'Sour Gummy, sans-serif', width: '25rem', padding: '1rem', position: 'absolute', left: '2rem', bottom: '2rem', filter: 'scale(0.6)', overflow: 'hidden', width: 'max-content' }}
                     className="match-stats"
-                    initial={{ width: '0' }}
-                    animate={statsTableStatus ? { width: '25rem' } : { width: '0' }}
+                    initial={{ transform: 'scaleX(0)' }}
+                    animate={statsTableStatus ? { transform: 'scaleX(1)', transformOrigin: 'left', transition: { type: 'spring' } } : { transform: 'scaleX(0)', transformOrigin: 'left', transition: { type: 'spring' } }}
                     transition={{ width: statsTableStatus ? { type: 'spring' } : { type: 'tween' } }}
-                    exit={{ width: '0', display: 'none', overflow: 'hidden' }}>
-                    <motion.div style={{ display: 'flex', alignItems: 'center', width: '25rem', color: '#fff', textTransform: 'uppercase', justifyContent: 'space-between' }} className="title">
+                    exit={{ transform: 'scaleX(0)', transformOrigin: 'right', display: 'none', overflow: 'hidden' }}>
+                    <motion.div style={{ display: 'flex', alignItems: 'center', transformOrigin: 'right', width: '25rem', color: '#fff', textTransform: 'uppercase', justifyContent: 'space-between' }} className="title">
                         <motion.div className="home-logo-wrapper"
                             style={{
                                 display: 'flex',

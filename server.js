@@ -2,8 +2,8 @@ import express from 'express';
 import readline from 'readline';
 import cors from 'cors';
 import keypress from 'keypress';
-import { PostMatch, updateMatchScore, updateMatchStatus, updateStats } from './database/PostMatches.js';
-import getAllMatches from './database/GetMatches.js';
+import { PostMatch, updateMatchScore, updateMatchStatus, updateStats, AddCompetition, postAddRound } from './database/PostMatches.js';
+import { getAllMatches, getCompetitions, getRounds } from './database/GetMatches.js';
 
 let update_graphic_status;
 let scoreboard_graphic_status;
@@ -17,6 +17,9 @@ let scorebug_status;
 let fixtures_status;
 let ultra_hd;
 let statsTableStatus;
+let bottomNextGameStatus;
+let commentatorStatus;
+let scoreboardStats;
 
 let clock = false;
 let clockSeconds = 2400;
@@ -29,6 +32,10 @@ let statusOfGame = 0;
 let selectedMatch = {};
 let fixturesTable = [];
 let stats = {};
+
+let commentatorTable = []
+
+let bottomNextGameData = {};
 
 let inputLock = false;
 let statsInputLock = false;
@@ -43,7 +50,8 @@ app.use(cors({
 
 const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
+    prompt: '> '
 });
 
 rl.input.setRawMode(true);
@@ -89,7 +97,7 @@ const nrlTeams = [
 ];
 
 const nrlStadiums = [
-    "Accor Stadium", // Formerly ANZ Stadium
+    "Accor Stadium", // Formerly ANZ Stadium & Stadium Australia
     "AAMI Park",
     "Allianz Stadium",
     "CommBank Stadium", // Formerly Bankwest Stadium
@@ -97,16 +105,14 @@ const nrlStadiums = [
     "CQU Stadium",
     "GIO Stadium",
     "Henson Park",
-    "Indigenous Round at Optus Stadium",
     "Suncorp Stadium",
     "TIO Stadium",
     "Leichhardt Oval",
     "Brookvale Oval",
-    "McDonald Jones Stadium",
+    "McDonald Jones",
     "Glen Willow Stadium",
     "Netstrata Jubilee Stadium",
     "Scully Park",
-    "Stadium Australia",
     "Sunshine Coast Stadium",
     "Victoria Park",
     "Allegiant Stadium",
@@ -115,8 +121,18 @@ const nrlStadiums = [
     "WIN Stadium",
     "QCB Stadium",
     "GIO Stadium",
-    "Belmore Sports Ground" // For Las Vegas NRL game
+    "Belmore Sports Ground"
 ];
+
+const commentators = [
+    { 'person': 'Yvonne Sampson', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL Host', 'NRL Presenter', 'Sports Commentator', 'Television Presenter', 'Sports Journalist', 'NRL Expert', 'Panelist', 'Television Persionality', 'Lachy Sports Presenter', 'Sportscaster'] },
+    { 'person': 'Jake Duke', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Braith Anasta', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '304 NRL Appearances', '2005 NRL Premiership Winner', '2008 Dally M Captain of the Year', 'NSW State of Origin Player', 'Australia International Representative'] },
+    { 'person': 'Gordon Tallis', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '227 NRL Appearances', '2000 NRL Premiership Winner', 'Queensland State of Origin Captain', 'Australia International Representative', '2001 Dally M Lock of the Year'] },
+    { 'person': 'Matty Johns', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '255 NRL Appearances', '1997 NRL Premiership Winner', 'NSW State of Origin Player', 'Australia International Representative', '2001 Dally M Five-Eighth of the Year'] },
+    { 'person': 'Warren Smith', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] }
+
+]
 
 let homeTeam, awayTeam;
 let matches = []; // Array to store the current matches
@@ -222,6 +238,7 @@ rl.on('line', (input) => {
     } else if (input === "13") {
         update_graphic_status = false;
         statsStatus = false;
+        bottomNextGameStatus = false;
         fixtures_status = !fixtures_status;
         console.log(`${getFormattedDate()}: Fixtures table status set to ${fixtures_status}`);
     } else if (input === "16") {
@@ -232,6 +249,29 @@ rl.on('line', (input) => {
     } else if (input === '15') {
         ultra_hd = !ultra_hd;
         console.log(`${getFormattedDate()}: Ultra hd status set to ${ultra_hd}`);
+    } else if (input === "17") {
+        bottomGraphicSelect()
+    } else if (input === "18") {
+        bottomNextGameStatus = !bottomNextGameStatus
+        fixtures_status = false;
+        console.log(`${getFormattedDate()}: Bottom next game set to ${bottomNextGameStatus}`);
+    } else if (input === "19") {
+        update_graphic_status = false;
+        statsStatus = false;
+        bottomNextGameStatus = false;
+        statsTableStatus = false;
+        fixtures_status = false;
+        commentatorStatus = !commentatorStatus;
+        console.log(`${getFormattedDate()}: Commentator status set to ${commentatorStatus}`);
+    } else if (input === "20") {
+        commentatorTableFunction()
+    } else if (input === "21") {
+        createNewCompetition()
+    } else if (input === "22") {
+        addRound()
+    } else if (input === "23") {
+        scoreboardStats = !scoreboardStats
+        console.log(`${getFormattedDate()}: Scoreboard stats set to ${scoreboardStats}`);
     } else {
         console.log(`${getFormattedDate()}: Invalid option. Please try again.`);
         rl.prompt();
@@ -460,6 +500,170 @@ rl.input.on('keypress', (char, key) => {
     }
 });
 
+async function commentatorTableFunction() {
+    inputLock = true;
+    console.log("1. Delete commentator | 2. Add commentator | 3. View commentators");
+
+    rl.question('Choose an option: ', (option) => {
+        inputLock = false;
+
+        if (option === '1') {
+            commentatorTable = [];
+            console.log("Commentator table cleared.");
+            rl.prompt();
+        }
+
+        if (option === '2') {
+            commentators.map((commentator, index) => {
+                console.log(`${index + 1}. ${commentator.person}`);
+            });
+
+            rl.question('Which commentator to add? (Enter index): ', (index) => {
+                console.log(`You selected: ${commentators[parseInt(index) - 1].person}`);
+                commentators[parseInt(index) - 1].titles.map((title, index) => {
+                    console.log(`${index + 1}. ${title}`)
+                })
+                rl.question("Enter status: ", (status) => {
+                    if (status === 0) {
+                        commentatorTable.push({
+                            'name': commentators[parseInt(index) - 1].person,
+                            'title': '',
+                            'showLabel': false
+                        });
+                        rl.prompt();
+                    } else {
+                        console.log(commentators[parseInt(index) - 1].titles[parseInt(status) - 1])
+                        console.log('1. True | 2. False')
+                        rl.question('Show title: ', (value) => {
+                            if (value === '1') {
+                                commentatorTable.push({
+                                    'name': commentators[parseInt(index) - 1].person,
+                                    'title': commentators[parseInt(index) - 1].titles[parseInt(status) - 1],
+                                    'showLabel': true
+                                });
+                                rl.prompt();
+                            } else {
+                                commentatorTable.push({
+                                    'name': commentators[parseInt(index) - 1].person,
+                                    'title': commentators[parseInt(index) - 1].titles[parseInt(status) - 1],
+                                    'showLabel': false
+                                });
+                                rl.prompt();
+                            }
+                        })
+                    }
+                })
+            });
+        }
+
+        if (option === '3') {
+            console.log("Current commentators:");
+            commentatorTable.forEach(commentator => {
+                console.log(commentator.name, '|', commentator.title);
+            });
+            rl.prompt();
+        }
+    });
+}
+
+async function createNewCompetition() {
+    inputLock = true;
+    rl.question('Enter the name of this competition: ', (name) => {
+        inputLock = false;
+        if (!name) {
+            console.log('All options in this function are required.')
+            return createNewCompetition()
+        }
+
+        AddCompetition(name)
+    })
+}
+
+// Wrap rl.question in a Promise to allow using await
+// Wrap rl.question in a Promise to allow using await
+function questionPromise(query) {
+    return new Promise((resolve) => {
+        rl.question(query, resolve);
+    });
+}
+
+async function addRound() {
+    const competitionsTable = await getCompetitions();
+    const allMatches = await getAllMatches();
+    let addGames = [];
+
+    // Show all competitions
+    competitionsTable.forEach((competition, index) => {
+        console.log(`${getFormattedDate()}: ${index + 1}. ${competition.title}`);
+    });
+
+    // Get the competition selection from the user
+    const indexValue = await questionPromise('What competition would you like to add a round to: ');
+
+    const game = competitionsTable[indexValue - 1];
+
+    if (!indexValue) {
+        return addRound();
+    }
+
+    // Ask whether to add or view a round
+    const viewIndex = await questionPromise("Add or view a round: ");
+
+    if (!viewIndex) {
+        return addRound();
+    }
+
+    if (viewIndex === '0') {
+        console.log(`Name: ${game.title}`);
+        allMatches.forEach((match, index) => {
+            console.log(`${index + 1}. ${match.home_team} vs ${match.away_team}`);
+        });
+
+        // Function to ask for a game and add it
+        async function askForGame(allMatches) {
+            const gameIndex = await questionPromise('Add game index: ');
+            const selectedGame = allMatches[parseInt(gameIndex - 1)];
+
+            if (gameIndex === '') {
+                postAddRound(game.title, addGames);
+                rl.prompt();
+                return;
+            }
+
+            addGames.push({ 'match_id': selectedGame.match_no });
+            console.log(addGames);
+            return askForGame(allMatches);
+        }
+
+        askForGame(allMatches);
+    }
+
+    // Find and display rounds if the user selects a round
+    if (viewIndex === '1') {
+        console.log("Finding rounds:");
+
+        // Here we call the getRounds function directly to fetch the rounds
+        try {
+            const rounds = await getRounds(game.title); // Call getRounds directly here
+            for (let i = 0; i < rounds; i++) {
+                console.log(`[${i + 1}] Round ${i + 1}`);
+            }
+            rl.question('What round do you want to edit: ', (roundIndex) => {
+                const index = parseInt(roundIndex - 1)
+            })
+        } catch (err) {
+            console.error('Error fetching rounds:', err);
+        }
+
+        rl.prompt();
+    }
+
+    if (viewIndex > 1) {
+        console.log('Invalid option. Please try again.')
+        return addRound()
+    }
+}
+
 function selectTime() {
     rl.question('Enter minutes: ', (minutesInput) => {
         const minutes = parseInt(minutesInput);
@@ -514,11 +718,40 @@ function selectTeams() {
             awayTeam = nrlTeams[awayIndex];
             console.log(`${getFormattedDate()}: Away team selected: ${awayTeam}`);
 
-            // Post the match to the database and store in local matches array
-            PostMatch(homeTeam, awayTeam);
-            rl.prompt();
+            nrlStadiums.map((stadium, index) => {
+                console.log(`${index + 1}. ${stadium}`)
+            })
+            rl.question('What stadium: ', (stadiumIndex) => {
+                const stadium = nrlStadiums[parseInt(stadiumIndex - 1)]
+                PostMatch(homeTeam, awayTeam, stadium);
+                rl.prompt();
+            })
         });
     });
+}
+
+async function bottomGraphicSelect() {
+    const allMatches = await getAllMatches();
+    allMatches.forEach((match, index) => {
+        console.log(`${getFormattedDate()}: ${index + 1}. ${match.home_team} vs ${match.away_team}`);
+    });
+
+    rl.question('What game do you want to display: ', (input) => {
+        const match = allMatches[input - 1]
+
+        inputLock = true;
+        rl.question("Enter kickoff time: ", (kickoff) => {
+            inputLock = false;
+            bottomNextGameData = {}
+            bottomNextGameData = {
+                'home_team': match.home_team.toLowerCase().replace(/\s+/g, '-'),
+                'away_team': match.away_team.toLowerCase().replace(/\s+/g, '-'),
+                'kickoff': kickoff
+            }
+            console.log(bottomNextGameData)
+        })
+        rl.prompt()
+    })
 }
 
 async function fixturesTableSelect() {
@@ -560,7 +793,9 @@ async function fixturesTableSelect() {
                     const stadiumIndexValue = parseInt(stadiumIndex)
                     const stadium = nrlStadiums[stadiumIndexValue]
 
-                    selectedGame.stadium = stadium;
+                    if (selectedGame.stadium != '') { } else {
+                        selectedGame.stadium = stadium;
+                    }
                     inputLock = true
                     rl.question('What is the kickoff time for this selected match: ', (kickoff) => {
                         inputLock = false
@@ -687,7 +922,12 @@ app.get('/toggle', (req, res) => {
             fixtures_status,
             ultra_hd,
             stats,
-            statsTableStatus
+            statsTableStatus,
+            bottomNextGameData,
+            bottomNextGameStatus,
+            commentatorStatus,
+            commentatorTable,
+            scoreboardStats
         });
     } catch (error) {
         console.error('Error occurred:', error);

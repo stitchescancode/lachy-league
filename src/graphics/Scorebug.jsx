@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Roosters from '../assets/roosters.webp';
-import Raiders from '../assets/raiders.webp';
+import Raiders from '../assets/raiders.svg';
 import Panthers from '../assets/panthers.webp';
 import Storm from '../assets/storm.webp';
 import Manly from '../assets/manly.svg';
@@ -20,6 +20,21 @@ import Wigan from '../assets/wigan-warriors.webp';
 import Warrington from '../assets/warrington-wolves.svg';
 import AustraliaWomen from '../assets/australia-jillaroos.svg';
 import EnglishWomen from '../assets/england-lionesses.png';
+import { AnimatePresence, motion } from 'framer-motion';
+
+function darkenColor(hex, percentage) {
+    if (!hex.startsWith('#')) hex = `#${hex}`;
+    let r = parseInt(hex.slice(1, 3), 16);
+    let g = parseInt(hex.slice(3, 5), 16);
+    let b = parseInt(hex.slice(5, 7), 16);
+
+    r = Math.max(0, Math.min(255, Math.round(r - (r * percentage / 100))));
+    g = Math.max(0, Math.min(255, Math.round(g - (g * percentage / 100))));
+    b = Math.max(0, Math.min(255, Math.round(b - (b * percentage / 100))));
+
+    const darkenedHex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+    return darkenedHex;
+}
 
 function Scorebug({ initialMatchData, scores, statusOfGame, scorebugStatus }) {
     const [matchData, setMatchData] = useState(initialMatchData || {});
@@ -40,12 +55,12 @@ function Scorebug({ initialMatchData, scores, statusOfGame, scorebugStatus }) {
 
     useEffect(() => {
         const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes ScorebugWidth {
-                0% { width: 0; }
-                100% { width: 23rem; }
-            }
-        `;
+        // style.innerHTML = `
+        //     @keyframes ScorebugWidth {
+        //         0% { width: 0; }
+        //         100% { width: 23rem; }
+        //     }
+        // `;
         document.head.appendChild(style);
 
         // Cleanup function to remove the added style on component unmount
@@ -99,6 +114,60 @@ function Scorebug({ initialMatchData, scores, statusOfGame, scorebugStatus }) {
         }
     };
 
+    const getImageSize = (teamName) => {
+        switch (teamName) {
+            case 'Sydney Roosters': return ['0rem', '-.6rem', '-1.4rem', '0rem', '6rem'];
+            case 'Melbourne Storm': return ['0rem', '-1.9rem', '-1.5rem', '0rem', '5rem'];
+            case 'Canberra Raiders': return ['0rem', '-1.975rem', '-2.9rem', '0rem', '7rem'];
+            case 'Penrith Panthers': return ['0rem', '-4.2rem', '-2.7rem', '0rem', '9rem']; // Right, left, top, bottom
+            case 'Manly Warringah Sea Eagles': return '#6F0F3B';
+            case 'Gold Coast Titans': return ['0rem', '-0.5rem', '0rem', '0rem', '4rem'];
+            case 'Brisbane Broncos': return ['0rem', '-1.7rem', '-0.6rem', '0rem', '5rem'];
+            case 'Canterbury-Bankstown Bulldogs': return ['0rem', '-1.2rem', '0rem', '0rem', '6rem'];
+            case 'Cronulla Sharks': return ['0rem', '-1.7rem', '-1.2rem', '0rem', '5rem'];
+            case 'Dolphins': return ['0rem', '0rem', '-1.5rem', '0rem', '10rem']; // Right, left, top, bottom
+            case 'New Zealand Warriors': return ['0rem', '-1.05rem', '-1rem', '0rem', '5rem'];
+            case 'Newcastle Knights': return ['0rem', '-1.4rem', '-1.2rem', '0rem', '5rem'];
+            case 'North Queensland Cowboys': ['0rem', '0rem', '0rem', '0rem', '3rem'];
+            case 'Parramatta Eels': return ['0rem', '0.4rem', '-1.4rem', '0rem', '6rem'];
+            case 'South Sydney Rabbitohs': return ['0rem', '.5rem', '-1.7rem', '0rem', '6rem']
+            case 'St George Illawarra Dragons': return ['0rem', '0rem', '-.6rem', '0rem', '5rem'];
+            case 'Wests Tigers': return ['0rem', '-1.7rem', '-1.4rem', '0rem', '6.5rem'];
+            case 'Wigan Warriors': return ['0rem', '-2rem', '-2.2rem', '0rem', '7rem'];
+            case 'Warrington Wolves': return ['0rem', '-1.5rem', '-2.2rem', '0rem', '6rem'];
+            case 'Australia Jillaroos': return ['0rem', '-3.1rem', '-2.5rem', '0rem', '8.5rem']; // Right, left, top, bottom
+            case 'England Lionesses': return ['0rem', '-1.8rem', '-.4rem', '0rem', '7rem']; // Right, left, top, bottom
+            default: return '';
+        }
+    };
+
+    const getColor = (teamName) => {
+        switch (teamName) {
+            case 'Sydney Roosters': return '#E82C2E';
+            case 'Melbourne Storm': return '#632390';
+            case 'Canberra Raiders': return '#C3D941';
+            case 'Penrith Panthers': return '#221F20';
+            case 'Manly Warringah Sea Eagles': return '#6F0F3B';
+            case 'Gold Coast Titans': return '#0072AE';
+            case 'Brisbane Broncos': return '#760036';
+            case 'Canterbury-Bankstown Bulldogs': return '#0054A4';
+            case 'Cronulla Sharks': return '#0088b9';
+            case 'Dolphins': return '#f70e15';
+            case 'New Zealand Warriors': return '#108048';
+            case 'Newcastle Knights': return '#00539F';
+            case 'North Queensland Cowboys': return '#FFDD02';
+            case 'Parramatta Eels': return '#FFD326';
+            case 'South Sydney Rabbitohs': return '#003C1A';
+            case 'St George Illawarra Dragons': return '#E2231B';
+            case 'Wests Tigers': return '#F68C1A';
+            case 'Wigan Warriors': return '#84222f';
+            case 'Warrington Wolves': return '#005ba5';
+            case 'Australia Jillaroos': return '#00843D';
+            case 'England Lionesses': return '#ffffff';
+            default: return '';
+        }
+    };
+
     const statusFunction = (statusCode) => {
         switch (statusCode) {
             case 0: return 'Pregame';
@@ -110,104 +179,107 @@ function Scorebug({ initialMatchData, scores, statusOfGame, scorebugStatus }) {
         }
     };
 
-    if (!scorebugVisibility) {
-        return null; // If scorebugVisibility is false, don't render the scorebug
-    }
+    const negative = '-.5rem'
+
 
     return (
-        <div
-            className="scorebug"
-            style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                backgroundColor: '#313131',
-                width: '23rem',
-                height: '5rem',
-                position: 'absolute',
-                top: '2.2rem',
-                left: '3.6rem',
-                textTransform: 'uppercase',
-                fontFamily: "Sour Gummy, sans-serif",
-                color: 'white',
-                animation: scorebugVisibility ? 'ScorebugWidth .3s ease-in-out forwards' : ''
-            }}
-        >
-            <div
-                className="left"
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    alignItems: 'center',
-                    height: '5rem',
-                    width: '6rem',
-                    borderRadius: '.5rem',
-                    borderBottomRightRadius: '10rem',
-                    borderTopRightRadius: '10rem',
-                    backgroundColor: '#000',
-                    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)',
-                }}
-            >
-                <div
-                    className="img left_circle"
+        <AnimatePresence>
+            {scorebugVisibility && (
+                <motion.div
+                    className="scorebug"
                     style={{
                         display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '4rem',
-                        height: '4rem',
+                        justifyContent: 'space-between',
                         backgroundColor: '#313131',
-                        borderRadius: '50rem',
-                        marginRight: '.5rem',
+                        width: '23rem',
+                        height: '5rem',
+                        position: 'absolute',
+                        top: '2.2rem',
+                        left: '3.6rem',
+                        textTransform: 'uppercase',
+                        fontFamily: "Sour Gummy, sans-serif",
+                        color: 'white',
+                        animation: scorebugVisibility ? 'ScorebugWidth .3s ease-in-out forwards' : ''
                     }}
+                    initial={{ transform: 'scaleX(0)', transformOrigin: 'left' }}
+                    transition={{ type: 'spring' }}
+                    animate={scorebugVisibility ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)' }}
+                    exit={{ transform: 'scaleX(0)', transformOrigin: 'right', transition: { damping: '5' } }}
                 >
-                    <img src={getLogo(matchData.home_team)} alt={matchData.home_team} style={{ height: '2.2rem' }} />
-                </div>
-            </div>
-            <div
-                className="middle"
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '5rem',
-                }}
-            >
-                <h2 style={{ margin: 0 }}>
-                    {scoresValue.homeScore} - {scoresValue.awayScore}
-                </h2>
-                <p style={{ margin: 0 }}>{statusFunction(status)}</p>
-            </div>
-            <div
-                className="right"
-                style={{
-                    display: 'flex',
-                    justifyContent: 'start',
-                    alignItems: 'center',
-                    height: '5rem',
-                    width: '6rem',
-                    borderRadius: '.5rem',
-                    borderBottomLeftRadius: '10rem',
-                    borderTopLeftRadius: '10rem',
-                    backgroundColor: '#000',
-                    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)',
-                }}
-            >
-                <div
-                    className="img right_circle"
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '4rem',
-                        height: '4rem',
-                        backgroundColor: '#313131',
-                        borderRadius: '50rem',
-                        marginLeft: '.5rem',
-                    }}
-                >
-                    <img src={getLogo(matchData.away_team)} alt={matchData.away_team} style={{ height: '2.2rem' }} />
-                </div>
-            </div>
-        </div>
+                    <div
+                        className="left"
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'end',
+                            alignItems: 'center',
+                            height: '5rem',
+                            width: '6rem',
+                            borderRadius: '.5rem',
+                            borderBottomRightRadius: '10rem',
+                            borderTopRightRadius: '10rem',
+                            backgroundColor: '#000',
+                            boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)',
+                        }}
+                    >
+                        <div className="home-logo-wrapper"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '3.5rem', height: '3.5rem', borderRadius: '100%', marginRight: '.25rem', overflow: 'hidden', border: `3px solid ${getColor(matchData.home_team)}`, boxShadow: `0 0 10px 9px ${darkenColor(getColor(matchData.home_team))}`, position: 'relative', marginRight: '.5rem', backgroundColor: '#313131' }}>
+                            <img style={{
+                                width: `calc(${getImageSize(matchData.home_team)[4]} - ${negative})`,
+                                height: `calc(${getImageSize(matchData.home_team)[4]} - ${negative})`,
+                                right: `${getImageSize(matchData.home_team)[0]}`,
+                                bottom: `${getImageSize(matchData.home_team)[3]}`,
+                                top: `${getImageSize(matchData.home_team)[2]}`,
+                                left: `${getImageSize(matchData.home_team)[1]}`,
+                                objectFit: 'contain',
+                                position: 'absolute'
+                            }} className="img home_team_img" src={getLogo(matchData.home_team)} alt={matchData.home_team} />
+                        </div>
+                    </div>
+                    <div
+                        className="middle"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '5rem',
+                        }}
+                    >
+                        <h2 style={{ margin: 0 }}>
+                            {scoresValue.homeScore} - {scoresValue.awayScore}
+                        </h2>
+                        <p style={{ margin: 0 }}>{statusFunction(status)}</p>
+                    </div>
+                    <div
+                        className="right"
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'start',
+                            alignItems: 'center',
+                            height: '5rem',
+                            width: '6rem',
+                            borderRadius: '.5rem',
+                            borderBottomLeftRadius: '10rem',
+                            borderTopLeftRadius: '10rem',
+                            backgroundColor: '#000',
+                            boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)',
+                        }}
+                    >
+                        <div className="away-logo-wrapper"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '3.5rem', height: '3.5rem', borderRadius: '100%', marginRight: '.25rem', overflow: 'hidden', border: `3px solid ${getColor(matchData.away_team)}`, boxShadow: `0 0 10px 9px ${darkenColor(getColor(matchData.away_team))}`, position: 'relative', backgroundColor: '#313131', marginLeft: '.5rem' }}>
+                            <img style={{
+                                width: `calc(${getImageSize(matchData.away_team)[4]} - ${negative})`,
+                                height: `calc(${getImageSize(matchData.away_team)[4]} - ${negative})`,
+                                right: `${getImageSize(matchData.away_team)[0]}`,
+                                bottom: `${getImageSize(matchData.away_team)[3]}`,
+                                top: `${getImageSize(matchData.away_team)[2]}`,
+                                left: `${getImageSize(matchData.away_team)[1]}`,
+                                objectFit: 'contain',
+                                position: 'absolute'
+                            }} className="img away_team_img" src={getLogo(matchData.away_team)} alt={matchData.away_team} />
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }
 

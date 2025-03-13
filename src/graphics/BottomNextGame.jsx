@@ -22,6 +22,7 @@ import AustraliaWomen from '../assets/australia-jillaroos.svg';
 import EnglishWomen from '../assets/england-lionesses.png';
 
 import NathanCleary from '../players/penrith-panthers/n.cleary.png'
+import { AnimatePresence, motion } from 'framer-motion';
 
 const leftDiv = {
     display: 'flex',
@@ -36,9 +37,14 @@ const leftDiv = {
     // No width change for logo and circle; keep them the same
 };
 
-function BottomNextGame({ statsValue, bottomNextGameStatus, bottomNextGameData }) {
+function BottomNextGame({ bottomNextGameStatus, statsValue, bottomNextGameData, status }) {
     const [height, setHeight] = useState('0rem');
     const [bottomNextData, setBottomNextData] = useState({});
+    const [bottomNextStatusValue, setBottomNextStatus] = useState(false);
+
+    useEffect(() => {
+        setBottomNextStatus(status);
+    }, [status])
 
     // Function to get the image URL based on player name
     function getImageUrl(name, team) {
@@ -156,49 +162,71 @@ function BottomNextGame({ statsValue, bottomNextGameStatus, bottomNextGameData }
 
     if (display === 'double-team') {
         return (
-            <div style={{
-                backgroundColor: '#313131',
-                display: 'flex',
-                position: 'absolute',
-                height: '10rem',
-                borderTopRightRadius: '1rem',
-                bottom: height,
-                boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
-                fontFamily: "Sour Gummy, sans-serif",
-                textTransform: 'uppercase',
-                gap: '2rem'
-            }}>
-                <div style={leftDiv}>
-                    <div style={{
-                        background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
-                        width: '11rem',
-                        height: '6rem',
-                        border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
-                        borderRadius: '10rem',
+            <AnimatePresence>
+                {bottomNextStatusValue && (
+                    <motion.div style={{
+                        backgroundColor: '#313131',
                         display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center', // Center content vertically,
+                        position: 'absolute',
+                        height: '10rem',
+                        borderTopRightRadius: '1rem',
+                        bottom: height,
+                        boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
+                        fontFamily: "Sour Gummy, sans-serif",
+                        textTransform: 'uppercase',
+                        gap: '2rem',
+                        paddingRight: '2rem'
                     }}
-                        className="circle">
-                        <img style={{ height: '4rem', marginRight: '1rem' }} src={getLogo(bottomNextData.home_team)} alt="" />
-                        <img style={{ height: '4rem' }} src={getLogo(bottomNextData.away_team)} alt="" />
-                    </div>
-                </div>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    color: 'white',
-                    zIndex: 3,
-                    height: '100%',
-                    gap: '.25rem',
-                    marginRight: '4rem'
-                }} className="info">
-                    <p style={{ margin: '0' }}>{bottomNextData.subtitle} - {new Date().getFullYear()}</p>
-                    <h1 style={{ margin: '0' }}>{getAbbTeamName(bottomNextData.home_team)} vs {getAbbTeamName(bottomNextData.away_team)}</h1>
-                    <p style={{ margin: '0', color: '#fff', opacity: 0.4 }}>TODAY | 4pm</p>
-                </div>
-            </div>
+                        initial={{ 'width': 0 }}
+                        animate={bottomNextStatusValue ? { 'width': 'max-content' } : { 'width': 0 }}
+                        transition={{ type: 'tween' }}
+                        exit={{ width: 0, opacity: 0 }}>
+                        <motion.div style={leftDiv}>
+                            <div style={{
+                                background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+                                width: '11rem',
+                                height: '6rem',
+                                border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+                                borderRadius: '10rem',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center', // Center content vertically,
+                            }}
+                                className="circle"
+                                initial={{ 'width': 0 }}
+                                animate={{ 'width': '11rem' }}>
+                                <motion.img
+                                    style={{ height: '3rem', marginRight: '1rem' }}
+                                    src={getLogo(bottomNextData.home_team)}
+                                    alt=""
+                                    initial={{ rotate: -90 }}
+                                    animate={{ rotate: 0 }} />
+                                <motion.img style={{ height: '3rem' }}
+                                    src={getLogo(bottomNextData.away_team)}
+                                    alt=""
+                                    initial={{ rotate: 90 }}
+                                    animate={{ rotate: 0 }} />
+                            </div>
+                        </motion.div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            color: 'white',
+                            zIndex: 3,
+                            height: '100%',
+                            gap: '.25rem',
+                            marginRight: '4rem',
+                            paddingRight: '1rem'
+                        }} className="info">
+                            <p style={{ margin: '0' }}>NRL - {new Date().getFullYear()}</p>
+                            <h1 style={{ margin: '0' }}>{getAbbTeamName(bottomNextData.home_team)} vs {getAbbTeamName(bottomNextData.away_team)}</h1>
+                            <p style={{ margin: '0', color: '#fff', opacity: 0.4 }}>{bottomNextGameData.kickoff} - LIVE AND EXCLUSIVE ON LACHY LEAGUE</p>
+                        </div>
+                    </motion.div>
+                )
+                }
+            </AnimatePresence >
         );
     } else if ('single-team') {
         return (
@@ -237,7 +265,7 @@ function BottomNextGame({ statsValue, bottomNextGameStatus, bottomNextGameData }
                     zIndex: 3,
                     height: '100%',
                     gap: '.25rem',
-                    marginRight: '4rem'
+                    marginRight: '5rem'
                 }} className="info">
                     <p style={{ margin: '0' }}>{bottomNextData.subtitle} - {new Date().getFullYear()}</p>
                     <h1 style={{ margin: '0' }}>{getAbbTeamName(bottomNextData.home_team)} vs {getAbbTeamName(bottomNextData.away_team)}</h1>

@@ -96,15 +96,15 @@ function Stats({ statsValue, statsText }) {
             {shouldRender && (
                 <motion.div
                     style={styles.stats(isOpen)}
-                    transition={{ type: 'spring' }}
-                    initial={{ width: '0' }}
-                    animate={isOpen ? { width: '100%' } : { width: '0%' }} >
+                    transition={{ type: 'tween', duration: 0.5 }}
+                    initial={{ transform: 'scaleX(0)' }}
+                    animate={isOpen ? { transform: 'scaleX(1)', transformOrigin: 'left' } : { transform: 'scaleX(0)', transformOrigin: 'right' }} >
                     <motion.div
                         style={styles.lachyLeague(isOpen)}
-                        transition={{ type: 'spring' }}
-                        initial={{ width: 0, position: 'absolute' }}
-                        animate={isOpen ? { width: '20rem', position: 'unset' } : { width: 0, display: 'none' }}
-                    >NRL TONIGHT</motion.div>
+                        transition={{ type: 'tween' }}
+                        initial={{ transform: 'scaleX(0)', position: 'absolute' }}
+                        animate={isOpen ? { transform: 'scaleX(1)', position: 'unset' } : { transform: 'scaleX(0)', opacity: 0 }}
+                    >#LACHYLEAGUE</motion.div>
                     <p style={styles.scheduleText}>{text}</p>
                     {/* {isOpen && (
                         <div style={styles.countdown}>
@@ -130,9 +130,9 @@ const styles = {
         height: '5.5rem', // Increased height
         boxShadow: '0 -4px 10px rgba(0, 0, 0, 0.6)', // More depth
         gap: '2.5rem',
-        fontFamily: '"Poppins", sans-serif',
+        fontFamily: '"Sour Gummy", sans-serif',
         fontSize: '1.4rem', // Scaled-up text
-        width: 0
+        width: '100%'
     }),
 
     lachyLeague: (isOpen) => ({
@@ -150,7 +150,8 @@ const styles = {
         padding: '0 1.5rem',
         width: isOpen ? '20rem' : '0', // Animate width only when open
         boxSizing: 'border-box',
-        borderTop: '3px solid #555', // Slightly thicker border
+        borderTop: '3px solid #555', // Slightly thicker border,
+        width: '20rem'
     }),
 
     scheduleText: {
