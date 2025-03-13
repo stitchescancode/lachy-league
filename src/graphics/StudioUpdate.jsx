@@ -199,11 +199,11 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
   if (teamsLogo === false) {
     return (
       <AnimatePresence>
-        isVisible && (
+        updateStatus && (
         <motion.section style={div} className="section_update"
           initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-          transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-          animate={isVisible ? { transform: 'scaleX(1)', transformOrigin: 'left' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+          transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+          animate={updateStatus ? { transform: 'scaleX(1)', transformOrigin: 'left' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
           exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
           <div style={leftDiv} className="left">
             <img
@@ -223,8 +223,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     return (
       <motion.section style={div} className="section_update"
         initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+        animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
         exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
@@ -251,8 +251,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     return (
       <motion.section style={div} className="section_update"
         initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+        animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
         exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
@@ -278,8 +278,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     return (
       <motion.section style={div} className="section_update"
         initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+        animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
         exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
@@ -305,8 +305,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     return (
       <motion.section style={div} className="section_update"
         initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-        transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-        animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+        transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+        animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
         exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
         <div style={leftDiv} className="left">
           <div style={{
@@ -331,11 +331,11 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
   } else if (teamsLogo === "matty-johns-late") {
     return (
       <AnimatePresence>
-        isVisible && (
+        updateStatus && (
         <motion.section style={div} className="section_update"
           initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-          transition={isVisible ? { type: 'tween' } : { type: 'tween' }}
-          animate={isVisible ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
+          transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+          animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
           exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
           <div style={leftDiv} className="left">
             <div style={{

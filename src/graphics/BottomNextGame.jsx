@@ -164,23 +164,26 @@ function BottomNextGame({ bottomNextGameStatus, statsValue, bottomNextGameData, 
         return (
             <AnimatePresence>
                 {bottomNextStatusValue && (
-                    <motion.div style={{
-                        backgroundColor: '#313131',
-                        display: 'flex',
-                        position: 'absolute',
-                        height: '10rem',
-                        borderTopRightRadius: '1rem',
-                        bottom: height,
-                        boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
-                        fontFamily: "Sour Gummy, sans-serif",
-                        textTransform: 'uppercase',
-                        gap: '2rem',
-                        paddingRight: '2rem'
-                    }}
-                        initial={{ 'width': 0 }}
-                        animate={bottomNextStatusValue ? { 'width': 'max-content' } : { 'width': 0 }}
-                        transition={{ type: 'tween' }}
-                        exit={{ width: 0, opacity: 0 }}>
+                    <motion.div
+                        style={{
+                            backgroundColor: '#313131',
+                            display: 'flex',
+                            position: 'absolute',
+                            height: '10rem',
+                            borderTopRightRadius: '1rem',
+                            bottom: height,
+                            boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)',
+                            fontFamily: "Sour Gummy, sans-serif",
+                            textTransform: 'uppercase',
+                            gap: '2rem',
+                            paddingRight: '2rem',
+                            transformOrigin: 'left'
+                        }}
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1, transformOrigin: 'left' }}
+                        transition={{ type: 'tween', duration: 0.5, ease: 'easeOut' }}
+                        exit={{ scaleX: 0, opacity: 0 }}
+                    >
                         <motion.div style={leftDiv}>
                             <div style={{
                                 background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
