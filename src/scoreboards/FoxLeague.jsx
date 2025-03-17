@@ -42,7 +42,7 @@ function darkenColor(hex, percentage) {
 
 const width = '15rem';
 
-function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, statusOfGame, scores, clock, statsStatus }) {
+function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, statusOfGame, scores, clock, statsStatus, cycleData }) {
     const [matchData, setMatchData] = useState(initialMatchData || {});
     const [animationTrigger, setAnimationTrigger] = useState(false);
     const [scoreboardAnimationTrigger, setScoreboardAnimationTrigger] = useState(false);
@@ -53,12 +53,17 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
     const [scoresValue, setScores] = useState({})
     const [elementStatus, setElementStatus] = useState(false);
     const [scoreboardStatsStatus, setScoreboardStatsStatus] = useState(false)
+    const [scoreboardStatsChange, setScoreboardStatsChange] = useState([])
 
     useEffect(() => {
         if (initialMatchData) {
             setMatchData(initialMatchData);
         }
     }, [initialMatchData]);
+
+    useEffect(() => {
+        setScoreboardStatsChange(cycleData)
+    }, [cycleData])
 
     useEffect(() => {
         if (scores) {
@@ -277,7 +282,7 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
                                         '--away_image_size': getImageSize(matchData.away_team)[4],
                                     }}
                                     initial={{ width: '0' }}
-                                    transition={scoreboardStatus ? { type: 'spring' } : { type: 'tween', duration: 0.5 }}
+                                    transition={scoreboardStatus ? { type: 'spring', damping: 15 } : { type: 'tween', duration: 0.5 }}
                                     animate={scoreboardStatus ? { width: scoreboardWidth } : { opacity: 0 }}
                                     exit={{ opacity: 0 }}
                                 >
@@ -295,12 +300,19 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
                                             <h1 className="no-margin">{homeTeamName[1]}</h1>
                                         </div>
                                     </motion.div>
-                                    <div className="middle" style={{ display: (statusOfGame !== 0 ? 'block' : 'none') }}>
-                                        {statusOfGame !== 0 && (
-                                            <>
-                                                <h1>{scoresValue.homeScore} - {scoresValue.awayScore}</h1>
-                                            </>
-                                        )}
+                                    <div className="middle" style={{ display: (statusOfGame !== 0 ? 'flex' : 'none'), alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', height: '2rem', position: 'relative', 'overflow': 'hidden' }}>
+                                        <AnimatePresence>
+                                            {statusOfGame !== 0 && (
+                                                <>
+                                                    <motion.h1
+                                                        key={scoresValue}
+                                                        style={{ position: 'absolute' }}
+                                                        initial={{ top: '-4.2rem' }}
+                                                        animate={{ top: '-1.1rem' }}
+                                                        exit={{ top: '3rem' }}>{scoresValue.homeScore} - {scoresValue.awayScore}</motion.h1>
+                                                </>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                     <motion.div className="second-teams-div" style={{ '--away-team-color': away_team_color, '--away-team-darkened-color': away_team_darkened_color }}
                                         initial={{ width: '20rem' }}
@@ -317,72 +329,123 @@ function FoxLeague({ scoreboardStatus, initialMatchData, fullCompleteValue, stat
                                             <h1 className="no-margin">{awayTeamName[1]}</h1>
                                         </div>
                                     </motion.div>
-                                    {
-                                        statusOfGame === 0 ? (
+                                    <AnimatePresence>
+                                        {statusOfGame === 0 ? (
                                             null
                                         ) : statusOfGame === 1 ? (
-                                            // New functionality for status 1
-                                            <div className="clock">
+                                            // H1 with animation
+                                            <motion.div
+                                                className="clock"
+                                                key="h1"
+                                                initial={{ opacity: 0, scale: 0.5 }} // initial state: invisible and scaled down
+                                                animate={{ opacity: 1, scale: 1 }}   // final state: visible and normal size
+                                                exit={{ opacity: 0, scale: 0.5 }}    // exit state: fade out and scale down
+                                                transition={{ duration: 0.5 }}
+                                            >
                                                 <h2 className="no-margin">H1</h2>
                                                 <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                                            </div>
+                                            </motion.div>
                                         ) : statusOfGame === 2 ? (
-                                            <div className="clock">
+                                            // HALF TIME with animation
+                                            <motion.div
+                                                className="clock"
+                                                key="halfTime"
+                                                initial={{ opacity: 0, scale: 0.5 }} // initial state: invisible and scaled down
+                                                animate={{ opacity: 1, scale: 1 }}   // final state: visible and normal size
+                                                exit={{ opacity: 0, scale: 0.5 }}    // exit state: fade out and scale down
+                                                transition={{ duration: 0.5 }}
+                                            >
                                                 <h2 className="no-margin">HALF</h2>
                                                 <h2 className="no-margin">TIME</h2>
-                                            </div>
+                                            </motion.div>
                                         ) : statusOfGame === 3 ? (
-                                            // New functionality for status 3
-                                            <div className="clock">
+                                            // H2 with animation
+                                            <motion.div
+                                                className="clock"
+                                                key="h2"
+                                                initial={{ opacity: 0, scale: 0.5 }} // initial state: invisible and scaled down
+                                                animate={{ opacity: 1, scale: 1 }}   // final state: visible and normal size
+                                                exit={{ opacity: 0, scale: 0.5 }}    // exit state: fade out and scale down
+                                                transition={{ duration: 0.5 }}
+                                            >
                                                 <h2 className="no-margin">H2</h2>
                                                 <h1 className="no-margin">{convertSecondsToMMSS(clock)}</h1>
-                                            </div>
+                                            </motion.div>
                                         ) : statusOfGame === 4 ? (
-                                            // New functionality for status 4
-                                            <div className="clock">
+                                            // FULL TIME with animation
+                                            <motion.div
+                                                className="clock"
+                                                key="fullTime"
+                                                initial={{ opacity: 0, scale: 0.5 }} // initial state: invisible and scaled down
+                                                animate={{ opacity: 1, scale: 1 }}   // final state: visible and normal size
+                                                exit={{ opacity: 0, scale: 0.5 }}    // exit state: fade out and scale down
+                                                transition={{ duration: 0.5 }}
+                                            >
                                                 <h2 className="no-margin">FULL</h2>
                                                 <h2 className="no-margin">TIME</h2>
-                                            </div>
+                                            </motion.div>
                                         ) : (
                                             // Default case if no recognized status
                                             <div className="unknown-status">
                                                 <h2>Unknown Status</h2>
                                             </div>
-                                        )
-                                    }
+                                        )}
+                                    </AnimatePresence>
                                 </motion.div>
                             </div>
-                            {fullCompleteValue !== 0 && (
-                                <div className="tackle-count" style={{ height: '5rem', width: '8rem', '--tackle-scale': animationTrigger ? '1.1' : '1' }}>
-                                    <h1 style={{ fontFamily: 'Sour Gummy, sans-serif', fontSize: '1.8rem' }} className="no-margin" key={fullCompleteValue}>
-                                        {fullCompleteValue === 'zero'
-                                            ? 'ZERO'
-                                            : fullCompleteValue === 1
-                                                ? '1ST'
-                                                : fullCompleteValue === 2
-                                                    ? '2ND'
-                                                    : fullCompleteValue === 3
-                                                        ? '3RD'
-                                                        : (fullCompleteValue ? `${fullCompleteValue}TH` : '')}
-                                    </h1>
-                                </div>
-                            )}
+                            <AnimatePresence>
+                                {fullCompleteValue !== 0 && (
+                                    <motion.div className="tackle-count" style={{ height: '5rem', width: '8rem' }}
+                                        initial={{ transform: 'scaleX(0)', transformOrigin: 'left' }}
+                                        animate={{ transform: 'scaleX(1)' }}
+                                        exit={{ transform: 'scaleX(0)', transition: { transformOrigin: 'right' } }}>
+                                        <div style={{ width: '100%', backgroundColor: 'transparent', textAlign: 'center', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '2rem', overflow: 'hidden' }}>
+                                            <AnimatePresence>
+                                                <motion.h1
+                                                    style={{ fontFamily: 'Sour Gummy, sans-serif', fontSize: '1.8rem', position: 'absolute', height: '2rem', display: 'flex', alignItems: 'center' }}
+                                                    className="no-margin"
+                                                    key={fullCompleteValue}
+                                                    initial={{ top: '-2rem' }}
+                                                    animate={{ top: 0 }}
+                                                    exit={{ top: '2rem' }}
+                                                    transition={{
+                                                        type: 'tween', // Smooth transition
+                                                        duration: 0.3, // Adjust duration as necessary
+                                                    }}>
+                                                    {fullCompleteValue === 'zero'
+                                                        ? 'ZERO'
+                                                        : fullCompleteValue === 1
+                                                            ? '1ST'
+                                                            : fullCompleteValue === 2
+                                                                ? '2ND'
+                                                                : fullCompleteValue === 3
+                                                                    ? '3RD'
+                                                                    : (fullCompleteValue ? `${fullCompleteValue}TH` : '')}
+                                                </motion.h1>
+                                            </AnimatePresence>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                            {/* <Penalty /> */}
                         </div>
-                        {/* <Penalty /> */}
                         <motion.div
                             style={{ width: '26.25rem', background: 'linear-gradient(90deg, #313131, #414141)', fontFamily: "Sour Gummy, sans-serif", color: 'white', padding: '.75rem 4rem', boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.5)', borderBottomRightRadius: '1rem', borderBottomLeftRadius: '1rem' }}
                             initial={{ transform: 'scaleY(0)' }}
                             transition={{ delay: .5 }}
                             animate={scoreboardStatsStatus ? { transform: 'scaleY(1)', transformOrigin: 'top' } : { transform: 'scaleY(0)', transformOrigin: 'top' }}>
                             <div style={{ height: '2rem', overflow: 'hidden', position: 'relative' }}>
-                                <motion.div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'absolute', width: '26.25rem', top: '-2rem' }}
-                                    initial={{ top: '-2rem' }}
-                                    transition={{ delay: 1 }}
-                                    animate={{ top: '0rem' }}>
-                                    <h2 style={{ margin: '0', color: getColor(matchData.home_team) }}>5</h2>
-                                    <h2 style={{ margin: '0', textAlign: 'center' }}>Linebreaks</h2>
-                                    <h2 style={{ margin: '0', color: getColor(matchData.away_team) }}>19</h2>
-                                </motion.div>
+                                <AnimatePresence>
+                                    <motion.div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'absolute', width: '26.25rem', top: '-2rem' }}
+                                        key={scoreboardStatsChange.home_stats + scoreboardStatsChange.away_stats}
+                                        initial={{ top: '-2rem' }}
+                                        animate={{ top: '0rem' }}
+                                        exit={{ top: '2rem' }}>
+                                        <h2 style={{ margin: '0', color: getColor(matchData.home_team) }}>{scoreboardStatsChange.home_stats}</h2>
+                                        <h2 style={{ margin: '0', textAlign: 'center' }}>{scoreboardStatsChange.title}</h2>
+                                        <h2 style={{ margin: '0', color: getColor(matchData.away_team) }}>{scoreboardStatsChange.away_stats}</h2>
+                                    </motion.div>
+                                </AnimatePresence>
                             </div>
                         </motion.div>
                     </div>

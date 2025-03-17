@@ -162,7 +162,7 @@ function FixturesTable({ fixturesTable, status }) {
                         fontSize: '.85rem',
                         position: 'absolute',
                         bottom: '2rem',
-                        left: '3rem',
+                        left: '4.4rem',
                         width: 'max-content'
                     }}
                     className="container"
@@ -196,7 +196,7 @@ function FixturesTable({ fixturesTable, status }) {
                                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '100%', marginRight: '0', overflow: 'hidden', border: `3px solid ${getColor(match.home_team)}`, boxShadow: `0 0 10px 9px ${darkenColor(getColor(match.home_team))}`, position: 'relative' }}
                                         initial={{ rotate: -90 }}
                                         animate={{ rotate: 0 }}
-                                        transition={{ type: 'spring' }}
+                                        transition={{ type: 'spring', delay: 0.25 }}
                                         exit={{ display: 'none', opacity: 0 }}>
                                         <motion.div className="logo">
                                             <img style={{
@@ -207,7 +207,7 @@ function FixturesTable({ fixturesTable, status }) {
                                                 top: `${getImageSize(match.home_team)[2]}`,
                                                 left: `${getImageSize(match.home_team)[1]}`,
                                                 objectFit: 'contain',
-                                                position: 'absolute'
+                                                position: 'absolute',
                                             }} className="img home_team_img" src={getLogo(match.home_team)} alt={match.home_team} />
                                         </motion.div>
                                     </motion.div>
@@ -229,7 +229,7 @@ function FixturesTable({ fixturesTable, status }) {
                                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '100%', marginRight: '0', overflow: 'hidden', border: `3px solid ${getColor(match.away_team)}`, boxShadow: `0 0 10px 9px ${darkenColor(getColor(match.away_team))}`, position: 'relative' }}
                                         initial={{ rotate: 90 }}
                                         animate={{ rotate: 0 }}
-                                        transition={{ type: 'spring' }}>
+                                        transition={{ type: 'spring', delay: 0.25 }}>
                                         <motion.div className="logo">
                                             <img style={{
                                                 width: `${getImageSize(match.away_team)[4]}`,

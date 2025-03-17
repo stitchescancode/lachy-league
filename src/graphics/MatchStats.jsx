@@ -226,12 +226,11 @@ function MatchStats({ initialMatchData, status, stats, statusOfElement }) {
                             </div>
                         </motion.div>
                     </motion.div>
-                    <hr />
-                    <motion.div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="possession">
+                    {/* <motion.div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="possession">
                         <h2 style={{ color: 'white', opacity: '0.8' }}>{calculatePossessionRates(stats.team_a_total_sets, stats.team_b_total_sets, (stats.team_a_total_sets + stats.team_b_total_sets)).teamA}%</h2>
                         <h2>POSSESSION</h2>
                         <h2 style={{ color: 'white', opacity: '0.8' }}>{calculatePossessionRates(stats.team_a_total_sets, stats.team_b_total_sets, (stats.team_a_total_sets + stats.team_b_total_sets)).teamB}%</h2>
-                    </motion.div>
+                    </motion.div> */}
                     <hr />
                     <motion.div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="penalties">
                         <h2 style={{ color: 'white', opacity: '0.8' }}>{stats.team_b_penalties}</h2>
@@ -250,16 +249,30 @@ function MatchStats({ initialMatchData, status, stats, statusOfElement }) {
                         <h2>COMPLETED SETS</h2>
                         <h2 style={{ color: 'white', opacity: '0.8' }}>{stats.team_b_completions}/{stats.team_b_total_sets}</h2>
                     </motion.div>
+                    <hr />
+                    <motion.div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="completed-sets">
+                        <h2 style={{ color: 'white', opacity: '0.8' }}>
+                            {stats.team_b_total_sets
+                                ? Math.round((stats.team_a_completions / stats.team_a_total_sets) * 100)
+                                : 0}%
+                        </h2>
+                        <h2>COMPLETION RATE</h2>
+                        <h2 style={{ color: 'white', opacity: '0.8' }}>
+                            {stats.team_b_total_sets
+                                ? Math.round((stats.team_b_completions / stats.team_b_total_sets) * 100)
+                                : 0}%
+                        </h2>
+                    </motion.div>
                     {/* {statusOfGame !== 0 && statusOfGame !== 4 && (
-                            <>
-                                <hr />
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="winvis">
-                                    <h2 style={{ color: 'white', opacity: '0.8' }}>{calculateWinVis((stats.team_a_total_sets + stats.team_b_total_sets), stats.team_a_total_sets, stats.team_b_total_sets, initialMatchData.home_team_score, initialMatchData.away_team_score, stats.team_a_completions, stats.team_b_completions)?.teamA}%</h2>
-                                    <h2>WINVIS</h2>
-                                    <h2 style={{ color: 'white', opacity: '0.8' }}>{calculateWinVis((stats.team_a_total_sets + stats.team_b_total_sets), stats.team_a_total_sets, stats.team_b_total_sets, initialMatchData.home_team_score, initialMatchData.away_team_score, stats.team_a_completions, stats.team_b_completions)?.teamB}%</h2>
-                                </div>
-                            </>
-                        )} */}
+                        <>
+                            <hr />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }} className="winvis">
+                                <h2 style={{ color: 'white', opacity: '0.8' }}>{calculateWinVis((stats.team_a_total_sets + stats.team_b_total_sets), stats.team_a_total_sets, stats.team_b_total_sets, initialMatchData.home_team_score, initialMatchData.away_team_score, stats.team_a_completions, stats.team_b_completions)?.teamA}%</h2>
+                                <h2>WINVIS</h2>
+                                <h2 style={{ color: 'white', opacity: '0.8' }}>{calculateWinVis((stats.team_a_total_sets + stats.team_b_total_sets), stats.team_a_total_sets, stats.team_b_total_sets, initialMatchData.home_team_score, initialMatchData.away_team_score, stats.team_a_completions, stats.team_b_completions)?.teamB}%</h2>
+                            </div>
+                        </>
+                    )} */}
                 </motion.div>
             )
             }

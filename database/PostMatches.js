@@ -25,7 +25,17 @@ export function PostMatch(home, away, stadium) {
         'team_a_errors': 0,
         'team_b_errors': 0,
         'team_a_penalties': 0,
-        'team_b_penalties': 0
+        'team_b_penalties': 0,
+        'team_a_runs': 0,
+        'team_b_runs': 0,
+        'team_a_rm': 0,
+        'team_b_rm': 0,
+        'team_a_pcm': 0,
+        'team_b_pcm': 0,
+        'team_a_offloads': 0,
+        'team_b_offloads': 0,
+        'team_a_linebreaks': 0,
+        'team_b_linebreaks': 0
     });
 
     pool.query(query, [home, away, 0, stats, stadium], (err, results) => {

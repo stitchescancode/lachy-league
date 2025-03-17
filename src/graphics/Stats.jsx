@@ -1,10 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-function Stats({ statsValue, statsText }) {
+function Stats({ statsValue, statsText, table }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [text, setText] = useState('');
+    const [text, setText] = useState(`Welcome to Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`);
     const [lastCheck, setLastCheck] = useState(false);
+    const [statsTable, setStatsTable] = useState([])
+
+    useEffect(() => {
+        setStatsTable(table)
+    }, [table])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (statsTable.length !== 0) {
+                const randomIndex = Math.floor(Math.random() * statsTable.length); // Pick a random index
+                setText(statsTable[randomIndex]); // Set random string from table
+                console.log(statsTable)
+            } else {
+                console.log(statsTable); // For debugging
+                setText(`Welcome to Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`); // Fallback string
+            }
+        }, 5000); // Update every 5 seconds
+
+        // Cleanup the interval when the component is unmounted
+        return () => clearInterval(intervalId);
+    }, []); // Empty dependency array, so it runs only once when the component mounts
 
     // Manage the animation state
     const [shouldRender, setShouldRender] = useState(true);
@@ -38,12 +59,6 @@ function Stats({ statsValue, statsText }) {
             document.head.removeChild(style); // Clean up when the component unmounts
         };
     }, []);
-
-    useEffect(() => {
-        if (statsText) {
-            setText(statsText); // Update text on mount
-        }
-    }, [statsText]);
 
     useEffect(() => {
         if (statsValue !== lastCheck) {
@@ -105,7 +120,17 @@ function Stats({ statsValue, statsText }) {
                         initial={{ transform: 'scaleX(0)', position: 'absolute' }}
                         animate={isOpen ? { transform: 'scaleX(1)', position: 'unset' } : { transform: 'scaleX(0)', opacity: 0 }}
                     >#LACHYLEAGUE</motion.div>
-                    <p style={styles.scheduleText}>{text}</p>
+                    <div style={{ width: '100%', backgroundColor: 'transparent', display: 'flex', alignItems: 'center', height: '2rem', position: 'relative', overflow: 'hidden', top: 0 }}>
+                        <AnimatePresence>
+                            <motion.p
+                                style={styles.scheduleText}
+                                key={text}
+                                initial={{ position: 'absolute', top: '-3rem', paddingLeft: '2.5rem' }}
+                                animate={{ position: 'absolute', top: '-1.17rem', paddingLeft: '2.5rem' }}
+                                exit={{ position: 'absolute', top: '1rem', paddingLeft: '2.5rem' }}
+                            >{text}</motion.p>
+                        </AnimatePresence>
+                    </div>
                     {/* {isOpen && (
                         <div style={styles.countdown}>
                             <div>
@@ -129,10 +154,10 @@ const styles = {
         background: 'linear-gradient(to right, #262626, #3a3a3a)', // Smooth dark gradient
         height: '5.5rem', // Increased height
         boxShadow: '0 -4px 10px rgba(0, 0, 0, 0.6)', // More depth
-        gap: '2.5rem',
-        fontFamily: '"Sour Gummy", sans-serif',
+        fontFamily: '"Poppins", sans-serif',
         fontSize: '1.4rem', // Scaled-up text
-        width: '100%'
+        width: '100%',
+        alignItems: 'center'
     }),
 
     lachyLeague: (isOpen) => ({
@@ -162,8 +187,10 @@ const styles = {
         fontWeight: '600',
         textTransform: 'uppercase',
         letterSpacing: '1px',
-        paddingLeft: '1.5rem',
-        opacity: 0.95, // A bit less transparent
+        paddingLeft: '2.5rem',
+        opacity: 0.95, // A bit less transparent,
+        padding: '0 1.5rem',
+        height: '2rem',
     },
 
     countdown: {

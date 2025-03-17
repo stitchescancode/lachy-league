@@ -34,8 +34,10 @@ let fixturesTable = [];
 let stats = {};
 
 let commentatorTable = []
+let statsChange = []
 
 let bottomNextGameData = {};
+let scoreboardStatsCycle = {}
 
 let inputLock = false;
 let statsInputLock = false;
@@ -54,6 +56,7 @@ const rl = readline.createInterface({
     prompt: '> '
 });
 
+readline.emitKeypressEvents(process.stdin);
 rl.input.setRawMode(true);
 rl.input.resume();
 
@@ -130,8 +133,12 @@ const commentators = [
     { 'person': 'Braith Anasta', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '304 NRL Appearances', '2005 NRL Premiership Winner', '2008 Dally M Captain of the Year', 'NSW State of Origin Player', 'Australia International Representative'] },
     { 'person': 'Gordon Tallis', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '227 NRL Appearances', '2000 NRL Premiership Winner', 'Queensland State of Origin Captain', 'Australia International Representative', '2001 Dally M Lock of the Year'] },
     { 'person': 'Matty Johns', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster', '255 NRL Appearances', '1997 NRL Premiership Winner', 'NSW State of Origin Player', 'Australia International Representative', '2001 Dally M Five-Eighth of the Year'] },
-    { 'person': 'Warren Smith', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] }
-
+    { 'person': 'Warren Smith', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Lara Pitt', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Braith Anasta', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Greg Alexander', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Michael Ennis', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Jake Duke', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
 ]
 
 let homeTeam, awayTeam;
@@ -166,7 +173,8 @@ rl.on('line', (input) => {
         statsInputLock = true;
         rl.question(`${getFormattedDate()}: Please enter your text: `, (answer) => {
             console.log(`${getFormattedDate()}: You entered: ${answer}`);
-            statsText = answer;
+            statsChange.push(answer)
+            console.log(statsChange)
             statsInputLock = false;
             rl.prompt();
         });
@@ -272,6 +280,83 @@ rl.on('line', (input) => {
     } else if (input === "23") {
         scoreboardStats = !scoreboardStats
         console.log(`${getFormattedDate()}: Scoreboard stats set to ${scoreboardStats}`);
+    } else if (input === "24") {
+        removeStatsFromCycle()
+    } else if (input === "25") {
+        const table = ['Runs', 'Run metres', 'Post Contact Metres', 'Offloads', 'Linebreaks', 'Completions', 'Completion Rate', 'Errors', 'Penalties', 'Penalties Conceded']
+
+        table.map((string, index) => {
+            console.log(`${index + 1}. ${string}`)
+        })
+        rl.question("What scoreboard stat would you like to cycle: ", (index) => {
+            const minusIndex = index - 1
+
+            if (minusIndex === 0) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_runs,
+                    'title': 'Runs',
+                    'away_stats': stats.team_b_runs,
+                }
+            } else if (minusIndex === 1) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_rm,
+                    'title': 'Run metres',
+                    'away_stats': stats.team_b_rm,
+                }
+            } else if (minusIndex === 2) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_pcm,
+                    'title': 'Post contact metres',
+                    'away_stats': stats.team_b_pcm,
+                }
+            } else if (minusIndex === 3) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_offloads,
+                    'title': 'Offloads',
+                    'away_stats': stats.team_b_offloads,
+                }
+            } else if (minusIndex === 4) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_linebreaks,
+                    'title': 'Linebreaks',
+                    'away_stats': stats.team_b_linebreaks,
+                }
+            } else if (minusIndex === 5) {
+                scoreboardStatsCycle = {
+                    'home_stats': `${stats.team_a_completions}/${stats.team_a_total_sets}`,
+                    'title': 'Completions',
+                    'away_stats': `${stats.team_b_completions}/${stats.team_b_total_sets}`,
+                }
+            } else if (minusIndex === 6) {
+                scoreboardStatsCycle = {
+                    'home_stats': `${Math.round((stats.team_a_completions / stats.team_a_total_sets) * 100)}%`,
+                    'title': 'Completion Rate',
+                    'away_stats': `${Math.round((stats.team_b_completions / stats.team_b_total_sets) * 100)}%`,
+                }
+            } else if (minusIndex === 7) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_errors,
+                    'title': 'Errors',
+                    'away_stats': stats.team_b_errors,
+                }
+            } else if (minusIndex === 8) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_a_penalties,
+                    'title': 'Penalties',
+                    'away_stats': stats.team_b_penalties,
+                }
+            } else if (minusIndex === 9) {
+                scoreboardStatsCycle = {
+                    'home_stats': stats.team_b_penalties,
+                    'title': 'Penalties Conceded',
+                    'away_stats': stats.team_a_penalties,
+                }
+            }
+
+            console.log(scoreboardStatsCycle)
+
+            rl.prompt()
+        })
     } else {
         console.log(`${getFormattedDate()}: Invalid option. Please try again.`);
         rl.prompt();
@@ -458,43 +543,180 @@ rl.input.on('keypress', (char, key) => {
             updateMatchScore(selectedMatch.home_team, selectedMatch.away_team, home_team_score, away_team_score);
         }
     } else if (key.name === 'a') {
-        stats.team_a_total_sets += 1;
-        stats.game_sets += 1;
+        if (addMinus === false) {
+            stats.team_a_total_sets += 1;
+            stats.game_sets += 1;
+        } else {
+            stats.team_a_total_sets -= 1;
+            stats.game_sets -= 1;
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'z') {
-        stats.team_b_total_sets += 1;
-        stats.game_sets += 1;
+        if (addMinus === false) {
+            stats.team_b_total_sets += 1;
+            stats.game_sets += 1;
+        } else {
+            stats.team_b_total_sets -= 1;
+            stats.game_sets -= 1;
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 's') {
-        stats.team_a_total_sets += 1;
-        stats.team_a_completions += 1;
-        stats.game_sets += 1;
+        if (addMinus === false) {
+            stats.team_a_total_sets += 1;
+            stats.team_a_completions += 1;
+            stats.game_sets += 1;
+        } else {
+            stats.team_a_total_sets -= 1;
+            stats.team_a_completions -= 1;
+            stats.game_sets -= 1;
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'x') {
-        stats.team_b_total_sets += 1;
-        stats.team_b_completions += 1;
-        stats.game_sets += 1;
+        if (addMinus === false) {
+            stats.team_b_total_sets += 1;
+            stats.team_b_completions += 1;
+            stats.game_sets += 1;
+        } else {
+            stats.team_b_total_sets -= 1;
+            stats.team_b_completions -= 1;
+            stats.game_sets -= 1;
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'd') {
-        stats.team_a_penalties += 1
+        if (addMinus === false) {
+            stats.team_a_penalties += 1
+        } else {
+            stats.team_a_penalties -= 1
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'c') {
-        stats.team_b_penalties += 1
-        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        if (addMinus === false) {
+            stats.team_b_penalties += 1
+        } else {
+            stats.team_b_penalties -= 1
+        } updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'f') {
-        stats.team_a_errors += 1
+        if (addMinus === false) {
+            stats.team_a_errors += 1
+        } else {
+            stats.team_a_errors -= 1
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
     } else if (key.name === 'v') {
-        stats.team_b_errors += 1
+        if (addMinus === false) {
+            stats.team_b_errors += 1
+        } else {
+            stats.team_b_errors -= 1
+        }
         updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
         console.log(stats)
+    } else if (key.name === 'g') {
+        if (addMinus === false) {
+            stats.team_a_completions += 1
+        } else {
+            stats.team_a_completions -= 1
+        }
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === 'b') {
+        if (addMinus === false) {
+            stats.team_b_completions += 1
+        } else {
+            stats.team_b_completions -= 1
+        }
+        updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+        console.log(stats)
+    } else if (key.name === "tab") {
+        process.exit(0)
+    } else if (key.name === "h") {
+        inputLock = true;
+        rl.question("Enter home runs: ", (hruns) => {
+            rl.question("Enter away runs: ", (aruns) => {
+                inputLock = false;
+                console.log("Home runs: " + hruns)
+                console.log("Away runs: " + aruns)
+
+                stats.team_a_runs = parseInt(hruns);
+                stats.team_b_runs = parseInt(aruns);
+
+                updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+
+                rl.prompt()
+            })
+        })
+    } else if (key.name === "n") {
+        inputLock = true;
+        rl.question("Enter home run metres: ", (hruns) => {
+            rl.question("Enter away run metres: ", (aruns) => {
+                inputLock = false;
+                console.log("Home run metres: " + hruns)
+                console.log("Away run metres: " + aruns)
+
+
+                stats.team_a_rm = parseInt(hruns);
+                stats.team_b_rm = parseInt(aruns);
+
+                updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+
+                rl.prompt()
+            })
+        })
+    } else if (key.name === "j") {
+        inputLock = true;
+        rl.question("Enter home post contact metres: ", (hruns) => {
+            rl.question("Enter away post contact metres: ", (aruns) => {
+                inputLock = false;
+                console.log("Home post contact metres: " + hruns)
+                console.log("Away post contact metres: " + aruns)
+
+
+                stats.team_a_pcm = parseInt(hruns);
+                stats.team_b_pcm = parseInt(aruns);
+
+                updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+
+                rl.prompt()
+            })
+        })
+    } else if (key.name === "m") {
+        inputLock = true;
+        rl.question("Enter home offloads: ", (hruns) => {
+            rl.question("Enter away offloads: ", (aruns) => {
+                inputLock = false;
+                console.log("Home offloads: " + hruns)
+                console.log("Away offloads: " + aruns)
+
+                stats.team_a_offloads = parseInt(hruns);
+                stats.team_b_offloads = parseInt(aruns);
+
+                updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+
+                rl.prompt()
+            })
+        })
+    } else if (key.name === "w") {
+        inputLock = true;
+        rl.question("Enter home linebreaks: ", (hruns) => {
+            rl.question("Enter away linebreaks: ", (aruns) => {
+                inputLock = false;
+                console.log("Home linebreaks: " + hruns)
+                console.log("Away linebreaks: " + aruns)
+
+                stats.team_a_linebreaks = parseInt(hruns);
+                stats.team_b_linebreaks = parseInt(aruns);
+
+                updateStats(stats, selectedMatch.home_team, selectedMatch.away_team)
+
+                rl.prompt()
+            })
+        })
     } else if (key.name === "o") {
         console.clear()
     }
@@ -662,6 +884,21 @@ async function addRound() {
         console.log('Invalid option. Please try again.')
         return addRound()
     }
+}
+
+async function removeStatsFromCycle() {
+    statsChange.map((stats, index) => {
+        console.log(`${index + 1}. ${stats}`)
+    })
+    rl.question("What cycle: ", (index) => {
+        const Index = index - 1;
+
+        statsChange.splice(Index, 1)
+
+        console.log(statsChange)
+
+        rl.prompt()
+    })
 }
 
 function selectTime() {
@@ -878,17 +1115,38 @@ async function selectGame() {
             stats.team_b_errors = statsData.team_b_errors || 0;
             stats.team_a_penalties = statsData.team_a_penalties || 0;
             stats.team_b_penalties = statsData.team_b_penalties || 0;
+            stats.team_a_runs = statsData.team_a_runs || 0;
+            stats.team_b_runs = statsData.team_b_runs || 0;
+            stats.team_a_rm = statsData.team_a_rm || 0;
+            stats.team_b_rm = statsData.team_b_rm || 0;
+            stats.team_a_pcm = statsData.team_a_pcm || 0;
+            stats.team_b_pcm = statsData.team_b_pcm || 0;
+            stats.team_a_offloads = statsData.team_a_offloads || 0;
+            stats.team_b_offloads = statsData.team_b_offloads || 0;
+            stats.team_a_linebreaks = statsData.team_a_linebreaks || 0;
+            stats.team_b_linebreaks = statsData.team_b_linebreaks || 0;
 
             console.log(stats)
 
             statusOfGame = selectedGame.status_of_game;
-            selectedMatch = {
-                home_team: selectedGame.home_team,
-                away_team: selectedGame.away_team,
-                home_team_score: selectedGame.home_team_score,
-                away_team_score: selectedGame.away_team_score,
-                status: 0
-            };
+            if (selectedGame.stadium) {
+                selectedMatch = {
+                    home_team: selectedGame.home_team,
+                    away_team: selectedGame.away_team,
+                    home_team_score: selectedGame.home_team_score,
+                    away_team_score: selectedGame.away_team_score,
+                    status: 0,
+                    stadium: selectedGame.stadium,
+                };
+            } else {
+                selectedMatch = {
+                    home_team: selectedGame.home_team,
+                    away_team: selectedGame.away_team,
+                    home_team_score: selectedGame.home_team_score,
+                    away_team_score: selectedGame.away_team_score,
+                    status: 0,
+                };
+            }
             rl.prompt();
         });
     } catch (err) {
@@ -927,7 +1185,9 @@ app.get('/toggle', (req, res) => {
             bottomNextGameStatus,
             commentatorStatus,
             commentatorTable,
-            scoreboardStats
+            scoreboardStats,
+            statsChange,
+            scoreboardStatsCycle
         });
     } catch (error) {
         console.error('Error occurred:', error);

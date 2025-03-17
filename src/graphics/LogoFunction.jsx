@@ -61,7 +61,7 @@ const LiveDiv = (reverseAnimation) => ({
     color: '#fff',
     textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
     fontFamily: "Barlow Condensed, sans-serif",
-    fontWeight: 'bold',
+    fontWeight: 800,
     opacity: 0, // Start as invisible
     animation: reverseAnimation ? 'reverseRevealLive 1s forwards 1s' : 'revealLive 1s forwards 1s', // Animation to reveal or reverse
 });

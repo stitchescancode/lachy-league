@@ -28,7 +28,7 @@ import MattyJohnsLate from '../programming/late-show-with-matty-johns.webp'
 
 import Countdown from './Countdown';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { animate, AnimatePresence, motion } from 'framer-motion';
 
 function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
   const [height, setHeight] = useState('0rem'); // Default height set to '0rem'
@@ -126,11 +126,11 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     height: '9.8rem',
     width: '100%', // Take up full width now, no animations affecting it
     gap: '2rem',
-    fontSize: '1.75rem',
-    fontFamily: 'Sour Gummy, sans-serif',
+    fontSize: '1.5rem',
+    fontFamily: '"Poppins", sans-serif',
     color: 'white',
     textTransform: 'uppercase',
-    boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)', // Stronger drop shadow
+    boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.8)', // Stronger drop shadow,
   };
 
   const img = {
@@ -163,10 +163,6 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     // No width change for logo and circle; keep them the same
   };
 
-  const rightDiv = {
-    position: 'relative',
-  };
-
   const getLogo = (teamName) => {
     switch (teamName) {
       case 'Sydney Roosters': return Roosters;
@@ -194,7 +190,7 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     }
   };
 
-  const teamsLogo = false;
+  const teamsLogo = true;
 
   if (teamsLogo === false) {
     return (
@@ -212,39 +208,89 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
               alt={`Lachy League on channel ${import.meta.env.VITE_CHANNEL_NUMBER}`}
             />
           </div>
-          <div className="right" style={rightDiv}>
-            <h1>{text || ''}</h1>
-          </div>
+          <AnimatePresence>
+            <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+              <motion.h1
+                style={{ position: 'absolute', height: '2rem', margin: 0 }}
+                key={text}
+                initial={{ top: '-2rem' }}
+                animate={{ top: '-.65rem' }}
+                exit={{ top: '5rem' }}>{text || ''}
+              </motion.h1>
+            </div>
+          </AnimatePresence>
         </motion.section>
         )
       </AnimatePresence>
     );
   } else if (teamsLogo === true) {
     return (
-      <motion.section style={div} className="section_update"
+      <motion.section
+        style={div}
+        className="section_update"
         initial={{ transformOrigin: 'left', transform: 'scaleX(0)' }}
-        transition={updateStatus ? { type: 'tween' } : { type: 'tween' }}
+        transition={{ type: 'tween' }}
         animate={updateStatus ? { transform: 'scaleX(1)' } : { transform: 'scaleX(0)', transformOrigin: 'right' }}
-        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}>
+        exit={{ transform: 'scaleX(0)', transformOrigin: 'right' }}
+      >
         <div style={leftDiv} className="left">
-          <div style={{
-            background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
-            width: '13rem',
-            height: '7rem',
-            border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
-            borderRadius: '10rem',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center', // Center content vertically
-          }}
-            className="circle">
-            <img style={{ height: '4rem', marginRight: '1rem' }} src={getLogo(data.home_team)} alt="" />
-            <img style={{ height: '4rem' }} src={getLogo(data.away_team)} alt="" />
+          <AnimatePresence>
+            {getLogo(data.home_team) && getLogo(data.away_team) && (
+              <motion.div
+                style={{
+                  background: 'linear-gradient(-180deg, #4F4F4F, #383838)',
+                  width: '13rem',
+                  height: '7rem',
+                  border: '4px solid rgba(255, 255, 255, 0.3)', // Lighter white with reduced opacity
+                  borderRadius: '10rem',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center', // Center content vertically
+                  position: 'absolute',
+                }}
+                className="circle"
+                key={data.home_team + data.away_team}
+                initial={{ right: '100%' }}
+                animate={{ left: '2.5rem' }}
+                exit={{ left: '-50%' }}
+                transition={{
+                  delay: 1,
+                  type: 'spring', // Smooth transition with spring
+                  stiffness: 300, // Controls the spring tension
+                  damping: 30, // Controls the damping of the spring
+                }}
+              >
+                <motion.img
+                  transition={{ delay: 1 }} // Slightly delayed rotation
+                  initial={{ rotate: -90 }} // Start rotated
+                  animate={{ rotate: 0 }} // Animate to normal rotation
+                  style={{ height: '3.45rem', marginRight: '1rem', objectFit: 'contain' }}
+                  src={getLogo(data.home_team)}
+                  alt="Home team logo"
+                />
+                <motion.img
+                  transition={{ delay: 1 }} // Slightly delayed rotation
+                  initial={{ rotate: 90 }} // Start rotated
+                  animate={{ rotate: 0 }} // Animate to normal rotation
+                  style={{ height: '3.45rem', objectFit: 'contain' }}
+                  src={getLogo(data.away_team)}
+                  alt="Away team logo"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        <AnimatePresence>
+          <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+            <motion.h1
+              style={{ position: 'absolute', height: '2rem', margin: 0 }}
+              key={text}
+              initial={{ top: '-2rem' }}
+              animate={{ top: '-.65rem' }}
+              exit={{ top: '5rem' }}>{text || ''}
+            </motion.h1>
           </div>
-        </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
+        </AnimatePresence>
       </motion.section>
     );
   } else if (teamsLogo === 'single-team') {
@@ -266,12 +312,20 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
             alignItems: 'center', // Center content vertically
           }}
             className="circle">
-            <img style={{ height: '4rem' }} src={getLogo('Newcastle Knights')} alt="" />
+            <img style={{ height: '4rem' }} src={getLogo('Dolphins')} alt="" />
           </div>
         </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
+        <AnimatePresence>
+          <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+            <motion.h1
+              style={{ position: 'absolute', height: '2rem', margin: 0 }}
+              key={text}
+              initial={{ top: '-2rem' }}
+              animate={{ top: '-.65rem' }}
+              exit={{ top: '5rem' }}>{text || ''}
+            </motion.h1>
+          </div>
+        </AnimatePresence>
       </motion.section>
     );
   } else if (teamsLogo === "nrl-tonight") {
@@ -296,9 +350,17 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
             <img style={{ height: '4rem' }} src={NRLTonight} alt="" />
           </div>
         </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
+        <AnimatePresence>
+          <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+            <motion.h1
+              style={{ position: 'absolute', height: '2rem', margin: 0 }}
+              key={text}
+              initial={{ top: '-2rem' }}
+              animate={{ top: '-.65rem' }}
+              exit={{ top: '5rem' }}>{text || ''}
+            </motion.h1>
+          </div>
+        </AnimatePresence>
       </motion.section>
     );
   } else if (teamsLogo === "matty-johns-sunday") {
@@ -323,9 +385,17 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
             <img style={{ height: '6.5rem' }} src={MattyJohnsSunday} alt="" />
           </div>
         </div>
-        <div className="right" style={rightDiv}>
-          <h1>{text || ''}</h1>
-        </div>
+        <AnimatePresence>
+          <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+            <motion.h1
+              style={{ position: 'absolute', height: '2rem', margin: 0 }}
+              key={text}
+              initial={{ top: '-2rem' }}
+              animate={{ top: '-.65rem' }}
+              exit={{ top: '5rem' }}>{text || ''}
+            </motion.h1>
+          </div>
+        </AnimatePresence>
       </motion.section>
     );
   } else if (teamsLogo === "matty-johns-late") {
@@ -352,9 +422,17 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
               <img style={{ height: '6.5rem' }} src={MattyJohnsLate} alt="" />
             </div>
           </div>
-          <div className="right" style={rightDiv}>
-            <h1>{text || ''}</h1>
-          </div>
+          <AnimatePresence>
+            <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+              <motion.h1
+                style={{ position: 'absolute', height: '2rem', margin: 0 }}
+                key={text}
+                initial={{ top: '-2rem' }}
+                animate={{ top: '-.65rem' }}
+                exit={{ top: '5rem' }}>{text || ''}
+              </motion.h1>
+            </div>
+          </AnimatePresence>
         </motion.section>
         )
       </AnimatePresence>

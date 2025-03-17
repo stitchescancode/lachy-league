@@ -18,6 +18,8 @@ import MatchStats from './graphics/MatchStats';
 import Copyright from './graphics/Copyright';
 import Ladder from './graphics/Ladder';
 
+import WeatherComponent from './graphics/WeatherComponent';
+
 function Screen() {
   const [matchData, setMatchData] = useState({});
   const [updateStatus, setUpdateStatus] = useState(false);
@@ -42,6 +44,8 @@ function Screen() {
   const [commentatorStatus, setCommentatorStatus] = useState(false);
   const [commentatorTable, setCommentatorTable] = useState([]);
   const [scoreboardStatsStatus, setScoreboardStatsStatus] = useState(false)
+  const [statsChange, setStatsChange] = useState([])
+  const [scoreboardStatsChange, setScoreboardStatsChange] = useState([])
 
   const logoStyle = {
     position: 'absolute',
@@ -268,7 +272,6 @@ function Screen() {
         const response = await axios.get('http://localhost:3000/toggle');
         if (response.data && response.data.fixturesTable !== undefined) {
           setFixturesTable(response.data.fixturesTable);
-          console.log(response.data.fixturesTable)
         } else {
           console.error("Unexpected response format:", response);
         }
@@ -384,6 +387,32 @@ function Screen() {
         console.error("Error fetching graphic status:", err);
       }
     };
+    const fetchStatsChange = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.statsChange !== undefined) {
+          setStatsChange(response.data.statsChange);
+          console.log(statsChange)
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchScoreboardStatsCycle = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.scoreboardStatsCycle !== undefined) {
+          setScoreboardStatsChange(response.data.scoreboardStatsCycle);
+          console.log(statsChange)
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
 
     const intervalId = setInterval(() => {
       fetchStatusGraphicStatus();
@@ -409,6 +438,8 @@ function Screen() {
       fetchCommentatorStatus();
       fetchCommentatorTable();
       fetchScoreboardStatsStatus();
+      fetchStatsChange();
+      fetchScoreboardStatsCycle()
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -421,11 +452,12 @@ function Screen() {
       <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={bottomNextData} status={bottomNextStatus} />
       <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} ultrahd={ultraHD} />
       <StudioUpdate initialMatchData={matchData} updateStatus={updateStatus} text={text} statsValue={statsValue} />
-      <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} statsStatus={scoreboardStatsStatus} />
+      <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} statsStatus={scoreboardStatsStatus} cycleData={scoreboardStatsChange} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
-      <Stats statsText={statsText} statsValue={statsValue} />
+      <Stats statsText={statsText} statsValue={statsValue} table={statsChange} />
       <FixturesTable fixturesTable={fixturesTableData} status={fixturesTableStatus} />
       <MatchStats statusOfElement={statsTableStatus} initialMatchData={matchData} status={statusOfGame} stats={stats} />
+      {/* <WeatherComponent initialMatchData={matchData} /> */}
       {/* <Copyright /> */}
     </>
   );
