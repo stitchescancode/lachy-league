@@ -190,9 +190,9 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
     }
   };
 
-  const teamsLogo = true;
+  const teamsLogo = 'lachy-league';
 
-  if (teamsLogo === false) {
+  if (teamsLogo === 'lachy-league') {
     return (
       <AnimatePresence>
         updateStatus && (
@@ -223,7 +223,7 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
         )
       </AnimatePresence>
     );
-  } else if (teamsLogo === true) {
+  } else if (teamsLogo === 'teams') {
     return (
       <motion.section
         style={div}
@@ -350,8 +350,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
             <img style={{ height: '4rem' }} src={NRLTonight} alt="" />
           </div>
         </div>
-        <AnimatePresence>
-          <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+        <div className="right" style={{ width: '70%', backgroundColor: 'transparent', height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative' }}>
+          <AnimatePresence>
             <motion.h1
               style={{ position: 'absolute', height: '2rem', margin: 0 }}
               key={text}
@@ -359,8 +359,8 @@ function StudioUpdate({ initialMatchData, updateStatus, text, statsValue }) {
               animate={{ top: '-.65rem' }}
               exit={{ top: '5rem' }}>{text || ''}
             </motion.h1>
-          </div>
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </motion.section>
     );
   } else if (teamsLogo === "matty-johns-sunday") {

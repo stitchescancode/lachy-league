@@ -4,6 +4,7 @@ import cors from 'cors';
 import keypress from 'keypress';
 import { PostMatch, updateMatchScore, updateMatchStatus, updateStats, AddCompetition, postAddRound } from './database/PostMatches.js';
 import { getAllMatches, getCompetitions, getRounds } from './database/GetMatches.js';
+import { time } from 'console';
 
 let update_graphic_status;
 let scoreboard_graphic_status;
@@ -20,6 +21,7 @@ let statsTableStatus;
 let bottomNextGameStatus;
 let commentatorStatus;
 let scoreboardStats;
+let logoUpcomingStatus;
 
 let clock = false;
 let clockSeconds = 2400;
@@ -38,6 +40,8 @@ let statsChange = []
 
 let bottomNextGameData = {};
 let scoreboardStatsCycle = {}
+
+let logoUpcoming = {}
 
 let inputLock = false;
 let statsInputLock = false;
@@ -139,6 +143,10 @@ const commentators = [
     { 'person': 'Greg Alexander', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
     { 'person': 'Michael Ennis', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
     { 'person': 'Jake Duke', 'titles': ['Lachy League', 'Lachy League host', 'Lachy League presenter', 'Sports presenter', 'Commentator', 'NRL host', 'NRL presenter', 'Sports commentator', 'Television presenter', 'Sports journalist', 'Panelist', 'Lachy Sports presenter', 'Sportscaster'] },
+    { 'person': 'Brent Read', 'titles': ['Lachy League', 'Journalist', 'NRL 360', 'The Australian'] },
+    { 'person': 'Paul Crawley', 'titles': ['Lachy League', 'Journalist', 'NRL 360', 'The Daily Telegraph'] },
+    { 'person': 'Dean Ritchie', 'titles': ['Lachy League', 'Journalist', 'NRL 360', 'The Daily Telegraph'] },
+    { 'person': 'Andrew Webster', 'titles': ['Lachy League', 'Journalist', 'NRL 360'] },
 ]
 
 let homeTeam, awayTeam;
@@ -357,6 +365,42 @@ rl.on('line', (input) => {
 
             rl.prompt()
         })
+    } else if (input === "26") {
+        nrlTeams.forEach((team, index) => {
+            console.log(`${index + 1}. ${team}`)
+        })
+        rl.question("Home team: ", (h) => {
+            const home = nrlTeams[parseInt(h - 1)]
+            nrlTeams.forEach((team, index) => {
+                console.log(`${index + 1}. ${team}`)
+            })
+            rl.question('Away team: ', (a) => {
+                const away = nrlTeams[parseInt(a - 1)]
+                if (home === away) {
+                    return
+                }
+
+                inputLock = true;
+                rl.question('Day: ', (day) => {
+                    rl.question("Time: ", (time) => {
+                        inputLock = false;
+                        logoUpcoming = {
+                            'home_team': home,
+                            'away_team': away,
+                            'day': day,
+                            'time': time
+                        }
+
+                        console.log(logoUpcoming)
+
+                        rl.prompt()
+                    })
+                })
+            })
+        })
+    } else if (input === "27") {
+        logoUpcomingStatus = !logoUpcomingStatus
+        console.log(`${getFormattedDate()}: Logo upcoming status set to ${logoUpcomingStatus}`);
     } else {
         console.log(`${getFormattedDate()}: Invalid option. Please try again.`);
         rl.prompt();
@@ -1187,7 +1231,9 @@ app.get('/toggle', (req, res) => {
             commentatorTable,
             scoreboardStats,
             statsChange,
-            scoreboardStatsCycle
+            scoreboardStatsCycle,
+            logoUpcoming,
+            logoUpcomingStatus
         });
     } catch (error) {
         console.error('Error occurred:', error);

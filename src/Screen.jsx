@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Logo from '../logos/positive-variant/lachy-league.png';
 
 import axios from 'axios';
 import StudioUpdate from './graphics/StudioUpdate';
 
 import LogoFunction from './graphics/LogoFunction';
+import LogoFile from './graphics/Logo';
 import FoxLeague from './scoreboards/FoxLeague';
 
 import Scorebug from './graphics/Scorebug'
@@ -46,6 +47,8 @@ function Screen() {
   const [scoreboardStatsStatus, setScoreboardStatsStatus] = useState(false)
   const [statsChange, setStatsChange] = useState([])
   const [scoreboardStatsChange, setScoreboardStatsChange] = useState([])
+  const [upcomingGame, setUpcomingGame] = useState({})
+  const [logoUpcomingStatus, setLogoUpcomingStatus] = useState(false)
 
   const logoStyle = {
     position: 'absolute',
@@ -413,6 +416,31 @@ function Screen() {
         console.error("Error fetching graphic status:", err);
       }
     };
+    const fetchLogoUpcoming = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.logoUpcoming !== undefined) {
+          setUpcomingGame(response.data.logoUpcoming);
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
+    const fetchLogoUpcomingStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/toggle');
+        if (response.data && response.data.logoUpcomingStatus !== undefined) {
+          setLogoUpcomingStatus(response.data.logoUpcomingStatus);
+          console.log(logoUpcomingStatus)
+        } else {
+          console.error("Unexpected response format:", response);
+        }
+      } catch (err) {
+        console.error("Error fetching graphic status:", err);
+      }
+    };
 
     const intervalId = setInterval(() => {
       fetchStatusGraphicStatus();
@@ -440,6 +468,8 @@ function Screen() {
       fetchScoreboardStatsStatus();
       fetchStatsChange();
       fetchScoreboardStatsCycle()
+      fetchLogoUpcoming();
+      fetchLogoUpcomingStatus();
     }, 1000);
 
     return () => clearInterval(intervalId);
@@ -447,10 +477,11 @@ function Screen() {
 
   return (
     <>
-      {/* <Ladder /> */}
+      <Ladder />
       <Commentators status={commentatorStatus} jsonData={commentatorTable} />
       <BottomNextGame bottomNextGameStatus={updateStatus} statsValue={statsValue} bottomNextGameData={bottomNextData} status={bottomNextStatus} />
-      <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} ultrahd={ultraHD} />
+      <LogoFunction updateLiveStatus={updateLiveStatus} logoGraphicStatus={logoGraphicStatus} ultrahd={ultraHD} initialMatchData={matchData} upcomingData={upcomingGame} upcomingDataStatus={logoUpcomingStatus} />
+      {/* <LogoFile /> */}
       <StudioUpdate initialMatchData={matchData} updateStatus={updateStatus} text={text} statsValue={statsValue} />
       <FoxLeague scoreboardStatus={scoreboardGraphicStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} fullCompleteValue={tackleCount} clock={clockSeconds} statsStatus={scoreboardStatsStatus} cycleData={scoreboardStatsChange} />
       <Scorebug scorebugStatus={scorebugStatus} initialMatchData={matchData} scores={scores} statusOfGame={statusOfGame} />
